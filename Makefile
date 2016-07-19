@@ -1,21 +1,32 @@
-# Makefile for PL/R
+# location of R library
+
+ifdef R_HOME
+r_libdir1x = ${R_HOME}/bin
+r_libdir2x = ${R_HOME}/lib
+# location of R includes
+r_includespec = -I${R_HOME}/include
+rhomedef = ${R_HOME}
+else
+R_HOME := $(shell pkg-config --variable=rhome libR)
+r_libdir1x := $(shell pkg-config --variable=rlibdir libR)
+r_libdir2x := $(shell pkg-config --variable=rlibdir libR)
+r_includespec := $(shell pkg-config --cflags-only-I libR)
+rhomedef := $(shell pkg-config --variable=rhome libR)
+endif
 
 ifneq (,${R_HOME})
 
-r_libdir1x  = ${R_HOME}/bin
-r_libdir2x  = ${R_HOME}/lib
-r_include   = ${R_HOME}/include
-r_home_default = ${R_HOME}
-
-MODULE_big	:= plr
-PG_CPPFLAGS	+= -I$(r_include)
+EXTENSION	= plr
+MODULE_big	= plr
+PG_CPPFLAGS	+= $(r_includespec)
 SRCS		+= plr.c pg_conversion.c pg_backend_support.c pg_userfuncs.c pg_rsupport.c
 OBJS		:= $(SRCS:.c=.o)
 SHLIB_LINK	+= -L$(r_libdir1x) -L$(r_libdir2x) -lR
-
-DATA_built	:= plr.sql 
-REGRESS		:= plr
-EXTRA_CLEAN	:= doc/HTML.index
+DATA_built	= plr.sql
+#DATA		= plr--8.3.0.16.sql plr--unpackaged--8.3.0.16.sql
+DOCS		= README.plr
+REGRESS		= plr
+EXTRA_CLEAN	= doc/html/* doc/plr-US.aux doc/plr-*.log doc/plr-*.out doc/plr-*.pdf doc/plr-*.tex-pdf
 
 ifdef USE_PGXS
 ifndef PG_CONFIG
@@ -24,8 +35,9 @@ endif
 PGXS := $(shell $(PG_CONFIG) --pgxs)
 include $(PGXS)
 else
-top_builddir = ../../..
-include $(top_builddir)/Makefile.global
+subdir = contrib/plr
+top_builddir = ../..
+include $(top_builddir)/src/Makefile.global
 include $(top_srcdir)/contrib/contrib-global.mk
 endif
 
@@ -57,18 +69,12 @@ endif
 # to work without, we have to skip it.
 ifneq (,$(findstring yes, $(shared_libr)$(allow_nonpic_in_shlib)))
 
-override CPPFLAGS := -I$(srcdir) -I$(r_include) $(CPPFLAGS)
-override CPPFLAGS += -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -DPKGLIBDIR=\"$(pkglibdir)\" -DDLSUFFIX=\"$(DLSUFFIX)\"
-override CPPFLAGS += -DR_HOME_DEFAULT=\"$(r_home_default)\"
+override CPPFLAGS := -I"$(srcdir)" -I"$(r_includespec)" $(CPPFLAGS)
+override CPPFLAGS += -DPKGLIBDIR=\"$(pkglibdir)\" -DDLSUFFIX=\"$(DLSUFFIX)\"
+override CPPFLAGS += -DR_HOME_DEFAULT=\"$(rhomedef)\"
 
 REGRESS_OPTS = --dbname=$(PL_TESTDB) --load-language=plr
 REGRESS = plr
-
-
-
-
-
-
 else # can't build
 
 all:

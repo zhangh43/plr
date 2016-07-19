@@ -162,8 +162,8 @@ select reval('a <- sd(c(1,2,3)); b <- mean(c(1,2,3)); a + b');
 create or replace function "commandArgs"() returns text[] as '' language 'plr';
 select "commandArgs"();
               commandArgs               
-----------------------------------------
- {PL/R,--silent,--no-save,--no-restore}
+------------------------------------------------
+ {PL/R,--slave,--silent,--no-save,--no-restore}
 (1 row)
 
 create or replace function vec(float) returns text as 'c(arg1)' language 'plr';
@@ -994,7 +994,7 @@ NOTICE:  drop cascades to function test_mt()
 NOTICE:  drop cascades to function test_vi()
 NOTICE:  drop cascades to function test_vt()
 NOTICE:  drop cascades to function r_median(double precision[])
-NOTICE:  drop cascades to function median(double precision)
+NOTICE:  drop cascades to function "median"(double precision)
 NOTICE:  drop cascades to function sprintf(text,text,text)
 NOTICE:  drop cascades to function mean(double precision[])
 NOTICE:  drop cascades to function sd(double precision[])

@@ -1,0 +1,9 @@
+*.o
+*.so
+regression.diffs
+regression.out
+optimizer_status.out
+results/
+.deps/
+vagrant/.vagrant/
+plr.sql
