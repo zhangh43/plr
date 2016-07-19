@@ -65,7 +65,7 @@ compute_function_hashkey(FunctionCallInfo fcinfo,
 						 Form_pg_proc procStruct,
 						 plr_func_hashkey *hashkey)
 {
-	int		i;
+	volatile int i;
 
 	/* Make sure any unused bytes of the struct are zero */
 	MemSet(hashkey, 0, sizeof(plr_func_hashkey));
