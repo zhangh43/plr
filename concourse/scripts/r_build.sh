@@ -120,4 +120,4 @@ esac
 pushd /usr/lib64
 tar zcvf bin_r_$OSVER.tar.gz ./R
 popd
-cp /usr/lib64/bin_r_$OSVER.tar.gz $WORKDIR/$OUTDIR/
+cp /usr/lib64/bin_r_$OSVER.tar.gz $WORKDIR/$OUTPUT/
