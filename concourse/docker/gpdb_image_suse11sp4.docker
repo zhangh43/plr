@@ -1,0 +1,47 @@
+FROM mstormo/suse:11SP4
+
+RUN zypper --gpg-auto-import-keys -n install ed wget coreutils sed psmisc vim
+
+RUN zypper --gpg-auto-import-keys -n install --oldpackage zlib-1.2.5-9.10.1.x86_64 zypper-1.5.9-12.1.x86_64 \
+                libzypp-8.13.6-18.1.x86_64 satsolver-tools-0.16.3-28.1.x86_64
+
+RUN zypper --gpg-auto-import-keys -n install readline-devel zlib-devel libbz2-devel python-devel \
+                libapr1 libapr1-devel libevent-devel libopenssl1_0_0 libopenssl-devel libyaml-0-2 \
+                libyaml-devel libxml2-devel htop libffi45 libffi45-devel krb5-devel gcc tar \
+                make bison flex gcc-c++ rsync subversion autoconf automake libtool
+
+RUN zypper --gpg-auto-import-keys -n install python-pip
+RUN pip install psi lockfile paramiko setuptools epydoc psutil
+
+# Install runtime dependencies
+RUN zypper --gpg-auto-import-keys -n install openssh net-tools iproute iputils zip unzip \
+                less glibc-locale libnuma1 gmp-devel mpfr-devel glibc-devel-32bit texinfo \
+                texlive-latex timezone python-xml
+
+# GCC
+RUN cd /tmp && \
+    wget --no-check-certificate https://github.com/gcc-mirror/gcc/archive/gcc-4_4_2-release.tar.gz && \
+    tar zxvf gcc-4_4_2-release && \
+    cd gcc-gcc-4_4_2-release/ && \
+    ./configure --prefix=/usr/local/gcc && \
+    make -j2 && \
+    make install && \
+    rm -rf /tmp/gcc*
+
+# Curl
+RUN cd /tmp && \
+    wget --no-check-certificate https://github.com/curl/curl/archive/curl-7_49_1.tar.gz --output-document=curl-7_49_1.tar.gz && \
+    tar zxvf curl-7_49_1.tar.gz && \
+    cd curl-curl-7_49_1 && \
+    ./buildconf && \
+    ./configure --prefix=/usr/local/lib64/curl && \
+    make && \
+    make install && \
+    rm -rf /tmp/curl*
+
+
+# Stupid GPDB4 makefiles make me do awful things
+RUN ln -s /bin/mkdir /usr/bin/mkdir
+
+ENV PATH=/usr/local/gcc/bin:/usr/local/lib64/curl/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/gcc/lib64:/usr/local/lib64/curl/lib

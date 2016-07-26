@@ -1,9 +1,22 @@
+# Output objects
 *.o
 *.so
+*.tar.gz
+
+# Regression test results
 regression.diffs
 regression.out
 optimizer_status.out
+
+plr.sql
+concourse/secrets/
 results/
 .deps/
 vagrant/.vagrant/
-plr.sql
+
+gpdb/BUILDROOT/
+gpdb/SOURCES/
+gpdb/SRPMS/
+gpdb/*.yml
+gpdb/*.rpm
+gpdb/*.gppkg

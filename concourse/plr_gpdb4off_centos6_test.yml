@@ -1,0 +1,20 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: agrishchenko/plr_centos6_ci
+    tag: 'latest'
+
+inputs:
+  - name: bin_gpdb4off_centos6
+  - name: plr_src
+  - name: plr_gpdb4off_centos6_build
+
+run:
+  path: plr_src/concourse/scripts/plr_gpdb_test.sh
+  args:
+    - bin_gpdb4off_centos6
+    - plr_gpdb4off_centos6_build
+    - centos6
+    - none

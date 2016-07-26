@@ -1,0 +1,27 @@
+FROM centos:6.8
+
+# Install dependencies
+RUN yum -y groupinstall "Development tools"
+RUN yum -y install epel-release ed wget coreutils sed psmisc
+RUN yum -y install readline-devel zlib-devel curl-devel bzip2-devel python-devel  \
+                   apr-devel libevent-devel openssl-libs openssl-devel libyaml    \
+                   libyaml-devel libxml2 libxml2-devel htop perl-Env libffi-devel \
+                   tetex-latex rsync
+RUN wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py
+RUN pip install psi lockfile paramiko setuptools epydoc psutil
+
+# Install runtime dependencies
+RUN yum -y install openssh-server net-tools iproute
+
+# curl
+RUN cd /tmp && \
+    wget https://github.com/curl/curl/archive/curl-7_49_1.tar.gz && \
+    tar zxvf curl-7_49_1.tar.gz && \
+    cd curl-curl-7_49_1 && \
+    ./buildconf && \
+    ./configure --prefix=/usr/local/curl && \
+    make && \
+    make install
+
+ENV PATH=/usr/local/curl/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/curl/lib:$LD_LIBRARY_PATH

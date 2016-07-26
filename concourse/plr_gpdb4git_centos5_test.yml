@@ -1,0 +1,21 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: agrishchenko/plr_centos5_ci
+    tag: 'latest'
+
+inputs:
+  - name: bin_gpdb4git_centos5
+  - name: plr_src
+  - name: plr_gpdb4git_centos5_build
+  - name: tmp_gpdb4git_gphdfs
+
+run:
+  path: plr_src/concourse/scripts/plr_gpdb_test.sh
+  args:
+    - bin_gpdb4git_centos5
+    - plr_gpdb4git_centos5_build
+    - centos5
+    - tmp_gpdb4git_gphdfs

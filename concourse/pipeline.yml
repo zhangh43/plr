@@ -1,0 +1,932 @@
+################################################################################
+#################################### GROUPS ####################################
+################################################################################
+
+groups:
+- name: plr
+  jobs:
+  - r_build
+  - gpdb_build
+  - gpdb4_build
+  - plr_centos5_build
+  - plr_centos6_build
+  - plr_centos7_build
+  - plr_suse11_build
+  - plr_centos5_test
+  - plr_centos6_test
+  - plr_centos7_test
+  - plr_suse11_test
+  - plr_centos5_release
+  - plr_centos6_release
+  - plr_centos7_release
+  - plr_suse11_release
+
+################################################################################
+################################## RESOURCES ###################################
+################################################################################
+
+resources:
+
+# Github Source Codes
+
+- name: gpdb4_src
+  type: git
+  source:
+    branch: 4.3_STABLE
+    uri: git@github.com:greenplum-db/gpdb4.git
+    private_key: {{gpdblanguages_private_key}}
+
+- name: gpdb_src
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:greenplum-db/gpdb.git
+    private_key: {{gpdblanguages_private_key}}
+
+- name: plr_src
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:greenplum-db/plr.git
+    private_key: {{gpdblanguages_private_key}}
+
+#################################
+########### CentOS 7 ############
+#################################
+
+# GPDB
+
+- name: bin_gpdb_centos7
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb/bin_gpdb_centos7.tar.gz
+
+- name: plr_gpdb_centos7_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb/plr-centos7.gppkg
+
+- name: plr_gpdb_centos7_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb_centos7/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4git
+
+- name: bin_gpdb4git_centos7
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4git/bin_gpdb4git_centos7.tar.gz
+
+- name: plr_gpdb4git_centos7_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4git/plr-centos7.gppkg
+
+- name: plr_gpdb4git_centos7_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4git_centos7/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4off
+
+- name: bin_gpdb4off_centos7
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4off/bin_gpdb4off_centos7.tar.gz
+
+- name: plr_gpdb4off_centos7_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4off/plr-centos7.gppkg
+
+- name: plr_gpdb4off_centos7_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4off_centos7/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+#################################
+########### CentOS 6 ############
+#################################
+
+# GPDB
+
+- name: bin_gpdb_centos6
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb/bin_gpdb_centos6.tar.gz
+
+- name: plr_gpdb_centos6_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb/plr-centos6.gppkg
+
+- name: plr_gpdb_centos6_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb_centos6/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4git
+
+- name: bin_gpdb4git_centos6
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4git/bin_gpdb4git_centos6.tar.gz
+
+- name: plr_gpdb4git_centos6_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4git/plr-centos6.gppkg
+
+- name: plr_gpdb4git_centos6_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4git_centos6/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4off
+
+- name: bin_gpdb4off_centos6
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4off/bin_gpdb4off_centos6.tar.gz
+
+- name: plr_gpdb4off_centos6_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4off/plr-centos6.gppkg
+
+- name: plr_gpdb4off_centos6_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4off_centos6/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+#################################
+########### CentOS 5 ############
+#################################
+
+# R
+
+- name: bin_r_centos5
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb/bin_r_centos5.tar.gz
+
+# GPDB
+
+- name: bin_gpdb_centos5
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb/bin_gpdb_centos5.tar.gz
+
+- name: plr_gpdb_centos5_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb/plr-centos5.gppkg
+
+- name: plr_gpdb_centos5_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb_centos5/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4git
+
+- name: bin_gpdb4git_centos5
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4git/bin_gpdb4git_centos5.tar.gz
+
+- name: plr_gpdb4git_centos5_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4git/plr-centos5.gppkg
+
+- name: plr_gpdb4git_centos5_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4git_centos5/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4off
+
+- name: bin_gpdb4off_centos5
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4off/bin_gpdb4off_centos5.tar.gz
+
+- name: plr_gpdb4off_centos5_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4off/plr-centos5.gppkg
+
+- name: plr_gpdb4off_centos5_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4off_centos5/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+#################################
+############ SUSE 11 ############
+#################################
+
+# R
+
+- name: bin_r_suse11
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb/bin_r_suse11.tar.gz
+
+# GPDB
+
+- name: bin_gpdb_suse11
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb/bin_gpdb_suse11.tar.gz
+
+- name: plr_gpdb_suse11_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb/plr-suse11.gppkg
+
+- name: plr_gpdb_suse11_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb_suse11/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4git
+
+- name: bin_gpdb4git_suse11
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4git/bin_gpdb4git_suse11.tar.gz
+
+- name: plr_gpdb4git_suse11_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4git/plr-suse11.gppkg
+
+- name: plr_gpdb4git_suse11_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4git_suse11/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPDB4off
+
+- name: bin_gpdb4off_suse11
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gpdb4off/bin_gpdb4off_suse11.tar.gz
+
+- name: plr_gpdb4off_suse11_build
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: gppkgs/gpdb4off/plr-suse11.gppkg
+
+- name: plr_gpdb4off_suse11_release
+  type: s3
+  source:
+    bucket: {{aws_release_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    regexp: gpdb4off_suse11/plr-ossv.*_pv([0-9\.]*).*\.gppkg
+
+# GPHDFS
+
+- name: tmp_gpdb4git_gphdfs
+  type: s3
+  source:
+    bucket: {{aws_bucket_name}}
+    region_name: {{aws_region_name}}
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    versioned_file: tmp/gphdfs.so
+
+# Timer
+
+- name: gpdb_rebuild_daily
+  type: time
+  source:
+    interval: 24h
+
+################################################################################
+##################################### JOBS #####################################
+################################################################################
+
+jobs:
+
+# Build R binaries
+- name: r_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+  - aggregate:
+    - task: r_centos5_build
+      file: plr_src/concourse/r_centos5_build.yml
+    - task: r_suse11_build
+      file: plr_src/concourse/r_suse11_build.yml
+  - aggregate:
+    - put: bin_r_centos5
+      params:
+        file: r_centos5_build/bin_r_centos5.tar.gz
+    - put: bin_r_suse11
+      params:
+        file: r_suse11_build/bin_r_suse11.tar.gz
+
+# Build GPDB4 binaries
+- name: gpdb4_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: gpdb4_src
+    - get: plr_src
+    - get: gpdb_rebuild_daily
+      trigger: true
+  - aggregate:
+    - task: gpdb4_centos5_build
+      file: plr_src/concourse/gpdb4_centos5_build.yml
+    - task: gpdb4_centos6_build
+      file: plr_src/concourse/gpdb4_centos6_build.yml
+    - task: gpdb4_centos7_build
+      file: plr_src/concourse/gpdb4_centos7_build.yml
+    - task: gpdb4_suse11_build
+      file: plr_src/concourse/gpdb4_suse11_build.yml
+  - aggregate:
+    - put: bin_gpdb4git_centos5
+      params:
+        file: gpdb4_centos5_build/bin_gpdb4git_centos5.tar.gz
+    - put: bin_gpdb4git_centos6
+      params:
+        file: gpdb4_centos6_build/bin_gpdb4git_centos6.tar.gz
+    - put: bin_gpdb4git_centos7
+      params:
+        file: gpdb4_centos7_build/bin_gpdb4git_centos7.tar.gz
+    - put: bin_gpdb4git_suse11
+      params:
+        file: gpdb4_suse11_build/bin_gpdb4git_suse11.tar.gz
+
+# Build GPDB binaries
+- name: gpdb_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: gpdb_src
+    - get: plr_src
+    - get: gpdb_rebuild_daily
+      trigger: true
+  - aggregate:
+    - task: gpdb_centos5_build
+      file: plr_src/concourse/gpdb_centos5_build.yml
+    - task: gpdb_centos6_build
+      file: plr_src/concourse/gpdb_centos6_build.yml
+    - task: gpdb_centos7_build
+      file: plr_src/concourse/gpdb_centos7_build.yml
+    - task: gpdb_suse11_build
+      file: plr_src/concourse/gpdb_suse11_build.yml
+  - aggregate:
+    - put: bin_gpdb_centos5
+      params:
+        file: gpdb_centos5_build/bin_gpdb_centos5.tar.gz
+    - put: bin_gpdb_centos6
+      params:
+        file: gpdb_centos6_build/bin_gpdb_centos6.tar.gz
+    - put: bin_gpdb_centos7
+      params:
+        file: gpdb_centos7_build/bin_gpdb_centos7.tar.gz
+    - put: bin_gpdb_suse11
+      params:
+        file: gpdb_suse11_build/bin_gpdb_suse11.tar.gz
+
+# Build PL/Java GP Package
+
+# Build GPDB binaries
+
+- name: plr_centos7_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      trigger: true
+    - get: bin_gpdb_centos7
+      trigger: true
+    - get: bin_gpdb4git_centos7
+      trigger: true
+    - get: bin_gpdb4off_centos7
+      trigger: true
+    - get: bin_r_centos5
+      trigger: true
+  - aggregate:
+    - task: plr_gpdb4git_build
+      file: plr_src/concourse/plr_gpdb4git_centos7_build.yml
+    - task: plr_gpdb4off_build
+      file: plr_src/concourse/plr_gpdb4off_centos7_build.yml
+    - task: plr_gpdb_build
+      file: plr_src/concourse/plr_gpdb_centos7_build.yml
+  - aggregate:
+    - put: plr_gpdb4git_centos7_build
+      params:
+        file: plr_gpdb4git_centos7_build/plr-centos7.gppkg
+    - put: plr_gpdb4off_centos7_build
+      params:
+        file: plr_gpdb4off_centos7_build/plr-centos7.gppkg
+    - put: plr_gpdb_centos7_build
+      params:
+        file: plr_gpdb_centos7_build/plr-centos7.gppkg
+
+- name: plr_centos6_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      trigger: true
+    - get: bin_gpdb_centos6
+      trigger: true
+    - get: bin_gpdb4git_centos6
+      trigger: true
+    - get: bin_gpdb4off_centos6
+      trigger: true
+    - get: bin_r_centos5
+      trigger: true
+  - aggregate:
+    - task: plr_gpdb4git_build
+      file: plr_src/concourse/plr_gpdb4git_centos6_build.yml
+    - task: plr_gpdb4off_build
+      file: plr_src/concourse/plr_gpdb4off_centos6_build.yml
+    - task: plr_gpdb_build
+      file: plr_src/concourse/plr_gpdb_centos6_build.yml
+  - aggregate:
+    - put: plr_gpdb4git_centos6_build
+      params:
+        file: plr_gpdb4git_centos6_build/plr-centos6.gppkg
+    - put: plr_gpdb4off_centos6_build
+      params:
+        file: plr_gpdb4off_centos6_build/plr-centos6.gppkg
+    - put: plr_gpdb_centos6_build
+      params:
+        file: plr_gpdb_centos6_build/plr-centos6.gppkg
+
+- name: plr_centos5_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      trigger: true
+    - get: bin_gpdb_centos5
+      trigger: true
+    - get: bin_gpdb4git_centos5
+      trigger: true
+    - get: bin_gpdb4off_centos5
+      trigger: true
+    - get: bin_r_centos5
+      trigger: true
+  - aggregate:
+    - task: plr_gpdb4git_build
+      file: plr_src/concourse/plr_gpdb4git_centos5_build.yml
+    - task: plr_gpdb4off_build
+      file: plr_src/concourse/plr_gpdb4off_centos5_build.yml
+    - task: plr_gpdb_build
+      file: plr_src/concourse/plr_gpdb_centos5_build.yml
+  - aggregate:
+    - put: plr_gpdb4git_centos5_build
+      params:
+        file: plr_gpdb4git_centos5_build/plr-centos5.gppkg
+    - put: plr_gpdb4off_centos5_build
+      params:
+        file: plr_gpdb4off_centos5_build/plr-centos5.gppkg
+    - put: plr_gpdb_centos5_build
+      params:
+        file: plr_gpdb_centos5_build/plr-centos5.gppkg
+
+- name: plr_suse11_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      trigger: true
+    - get: bin_gpdb_suse11
+      trigger: true
+    - get: bin_gpdb4git_suse11
+      trigger: true
+    - get: bin_gpdb4off_suse11
+      trigger: true
+    - get: bin_r_suse11
+      trigger: true
+  - aggregate:
+    - task: plr_gpdb4git_build
+      file: plr_src/concourse/plr_gpdb4git_suse11_build.yml
+    - task: plr_gpdb4off_build
+      file: plr_src/concourse/plr_gpdb4off_suse11_build.yml
+    - task: plr_gpdb_build
+      file: plr_src/concourse/plr_gpdb_suse11_build.yml
+  - aggregate:
+    - put: plr_gpdb4git_suse11_build
+      params:
+        file: plr_gpdb4git_suse11_build/plr-suse11.gppkg
+    - put: plr_gpdb4off_suse11_build
+      params:
+        file: plr_gpdb4off_suse11_build/plr-suse11.gppkg
+    - put: plr_gpdb_suse11_build
+      params:
+        file: plr_gpdb_suse11_build/plr-suse11.gppkg
+
+# Test PL/Java GP Package
+
+- name: plr_centos7_test
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_centos7_build]
+      trigger: true
+    - get: bin_gpdb_centos7
+      passed: [plr_centos7_build]
+    - get: bin_gpdb4git_centos7
+      passed: [plr_centos7_build]
+    - get: bin_gpdb4off_centos7
+      passed: [plr_centos7_build]
+    - get: plr_gpdb_centos7_build
+      passed: [plr_centos7_build]
+    - get: plr_gpdb4git_centos7_build
+      passed: [plr_centos7_build]
+    - get: plr_gpdb4off_centos7_build
+      passed: [plr_centos7_build]
+    - get: bin_r_centos5
+      passed: [plr_centos7_build]
+    - get: tmp_gpdb4git_gphdfs
+  - aggregate:
+    - task: plr_gpdb4git_test
+      file: plr_src/concourse/plr_gpdb4git_centos7_test.yml
+    - task: plr_gpdb4off_test
+      file: plr_src/concourse/plr_gpdb4off_centos7_test.yml
+    - task: plr_gpdb_test
+      file: plr_src/concourse/plr_gpdb_centos7_test.yml
+
+- name: plr_centos6_test
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_centos6_build]
+      trigger: true
+    - get: bin_gpdb_centos6
+      passed: [plr_centos6_build]
+    - get: bin_gpdb4git_centos6
+      passed: [plr_centos6_build]
+    - get: bin_gpdb4off_centos6
+      passed: [plr_centos6_build]
+    - get: plr_gpdb_centos6_build
+      passed: [plr_centos6_build]
+    - get: plr_gpdb4git_centos6_build
+      passed: [plr_centos6_build]
+    - get: plr_gpdb4off_centos6_build
+      passed: [plr_centos6_build]
+    - get: bin_r_centos5
+      passed: [plr_centos6_build]
+    - get: tmp_gpdb4git_gphdfs
+  - aggregate:
+    - task: plr_gpdb4git_test
+      file: plr_src/concourse/plr_gpdb4git_centos6_test.yml
+    - task: plr_gpdb4off_test
+      file: plr_src/concourse/plr_gpdb4off_centos6_test.yml
+    - task: plr_gpdb_test
+      file: plr_src/concourse/plr_gpdb_centos6_test.yml
+
+- name: plr_centos5_test
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_centos5_build]
+      trigger: true
+    - get: bin_gpdb_centos5
+      passed: [plr_centos5_build]
+    - get: bin_gpdb4git_centos5
+      passed: [plr_centos5_build]
+    - get: bin_gpdb4off_centos5
+      passed: [plr_centos5_build]
+    - get: plr_gpdb_centos5_build
+      passed: [plr_centos5_build]
+    - get: plr_gpdb4git_centos5_build
+      passed: [plr_centos5_build]
+    - get: plr_gpdb4off_centos5_build
+      passed: [plr_centos5_build]
+    - get: bin_r_centos5
+      passed: [plr_centos5_build]
+    - get: tmp_gpdb4git_gphdfs
+  - aggregate:
+    - task: plr_gpdb4git_test
+      file: plr_src/concourse/plr_gpdb4git_centos5_test.yml
+    - task: plr_gpdb4off_test
+      file: plr_src/concourse/plr_gpdb4off_centos5_test.yml
+    - task: plr_gpdb_test
+      file: plr_src/concourse/plr_gpdb_centos5_test.yml
+
+- name: plr_suse11_test
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_suse11_build]
+      trigger: true
+    - get: bin_gpdb_suse11
+      passed: [plr_suse11_build]
+    - get: bin_gpdb4git_suse11
+      passed: [plr_suse11_build]
+    - get: bin_gpdb4off_suse11
+      passed: [plr_suse11_build]
+    - get: plr_gpdb_suse11_build
+      passed: [plr_suse11_build]
+    - get: plr_gpdb4git_suse11_build
+      passed: [plr_suse11_build]
+    - get: plr_gpdb4off_suse11_build
+      passed: [plr_suse11_build]
+    - get: bin_r_suse11
+      passed: [plr_suse11_build]
+    - get: tmp_gpdb4git_gphdfs
+  - aggregate:
+    - task: plr_gpdb4git_test
+      file: plr_src/concourse/plr_gpdb4git_suse11_test.yml
+    - task: plr_gpdb4off_test
+      file: plr_src/concourse/plr_gpdb4off_suse11_test.yml
+    - task: plr_gpdb_test
+      file: plr_src/concourse/plr_gpdb_suse11_test.yml
+
+# Release PL/Java GP Package
+
+- name: plr_centos7_release
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_centos7_test]
+      trigger: true
+    - get: bin_gpdb_centos7
+      passed: [plr_centos7_test]
+    - get: bin_gpdb4git_centos7
+      passed: [plr_centos7_test]
+    - get: bin_gpdb4off_centos7
+      passed: [plr_centos7_test]
+    - get: bin_r_centos5
+      passed: [plr_centos7_test]
+  - aggregate:
+    - task: plr_gpdb4git_release
+      file: plr_src/concourse/plr_gpdb4git_centos7_release.yml
+    - task: plr_gpdb4off_release
+      file: plr_src/concourse/plr_gpdb4off_centos7_release.yml
+    - task: plr_gpdb_release
+      file: plr_src/concourse/plr_gpdb_centos7_release.yml
+  - aggregate:
+    - put: plr_gpdb4git_centos7_release
+      params:
+        file: plr_gpdb4git_centos7_release/plr-*.gppkg
+    - put: plr_gpdb4off_centos7_release
+      params:
+        file: plr_gpdb4off_centos7_release/plr-*.gppkg
+    - put: plr_gpdb_centos7_release
+      params:
+        file: plr_gpdb_centos7_release/plr-*.gppkg
+
+- name: plr_centos6_release
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_centos6_test]
+      trigger: true
+    - get: bin_gpdb_centos6
+      passed: [plr_centos6_test]
+    - get: bin_gpdb4git_centos6
+      passed: [plr_centos6_test]
+    - get: bin_gpdb4off_centos6
+      passed: [plr_centos6_test]
+    - get: bin_r_centos5
+      passed: [plr_centos6_test]
+  - aggregate:
+    - task: plr_gpdb4git_release
+      file: plr_src/concourse/plr_gpdb4git_centos6_release.yml
+    - task: plr_gpdb4off_release
+      file: plr_src/concourse/plr_gpdb4off_centos6_release.yml
+    - task: plr_gpdb_release
+      file: plr_src/concourse/plr_gpdb_centos6_release.yml
+  - aggregate:
+    - put: plr_gpdb4git_centos6_release
+      params:
+        file: plr_gpdb4git_centos6_release/plr-*.gppkg
+    - put: plr_gpdb4off_centos6_release
+      params:
+        file: plr_gpdb4off_centos6_release/plr-*.gppkg
+    - put: plr_gpdb_centos6_release
+      params:
+        file: plr_gpdb_centos6_release/plr-*.gppkg
+
+- name: plr_centos5_release
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_centos5_test]
+      trigger: true
+    - get: bin_gpdb_centos5
+      passed: [plr_centos5_test]
+    - get: bin_gpdb4git_centos5
+      passed: [plr_centos5_test]
+    - get: bin_gpdb4off_centos5
+      passed: [plr_centos5_test]
+    - get: bin_r_centos5
+      passed: [plr_centos5_test]
+  - aggregate:
+    - task: plr_gpdb4git_release
+      file: plr_src/concourse/plr_gpdb4git_centos5_release.yml
+    - task: plr_gpdb4off_release
+      file: plr_src/concourse/plr_gpdb4off_centos5_release.yml
+    - task: plr_gpdb_release
+      file: plr_src/concourse/plr_gpdb_centos5_release.yml
+  - aggregate:
+    - put: plr_gpdb4git_centos5_release
+      params:
+        file: plr_gpdb4git_centos5_release/plr-*.gppkg
+    - put: plr_gpdb4off_centos5_release
+      params:
+        file: plr_gpdb4off_centos5_release/plr-*.gppkg
+    - put: plr_gpdb_centos5_release
+      params:
+        file: plr_gpdb_centos5_release/plr-*.gppkg
+
+- name: plr_suse11_release
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: plr_src
+      passed: [plr_suse11_test]
+      trigger: true
+    - get: bin_gpdb_suse11
+      passed: [plr_suse11_test]
+    - get: bin_gpdb4git_suse11
+      passed: [plr_suse11_test]
+    - get: bin_gpdb4off_suse11
+      passed: [plr_suse11_test]
+    - get: bin_r_suse11
+      passed: [plr_suse11_test]
+  - aggregate:
+    - task: plr_gpdb4git_release
+      file: plr_src/concourse/plr_gpdb4git_suse11_release.yml
+    - task: plr_gpdb4off_release
+      file: plr_src/concourse/plr_gpdb4off_suse11_release.yml
+    - task: plr_gpdb_release
+      file: plr_src/concourse/plr_gpdb_suse11_release.yml
+  - aggregate:
+    - put: plr_gpdb4git_suse11_release
+      params:
+        file: plr_gpdb4git_suse11_release/plr-*.gppkg
+    - put: plr_gpdb4off_suse11_release
+      params:
+        file: plr_gpdb4off_suse11_release/plr-*.gppkg
+    - put: plr_gpdb_suse11_release
+      params:
+        file: plr_gpdb_suse11_release/plr-*.gppkg

@@ -75,6 +75,11 @@ override CPPFLAGS += -DR_HOME_DEFAULT=\"$(rhomedef)\"
 
 REGRESS_OPTS = --dbname=$(PL_TESTDB) --load-language=plr
 REGRESS = plr
+
+.PHONY: release
+release:
+	$(MAKE) -C gpdb
+
 else # can't build
 
 all:
