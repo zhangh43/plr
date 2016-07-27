@@ -8,7 +8,6 @@ OUTPUT=$2
 WORKDIR=`pwd`
 
 if [ "$OSVER" == "centos5" ]; then
-    export CC=gcc44
     alias gcc=gcc44
 fi
 
