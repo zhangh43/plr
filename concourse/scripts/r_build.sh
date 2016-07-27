@@ -97,23 +97,23 @@ popd
 
 # Magic to make it work from any directory it is installed into
 # given the fact R_HOME is set
-sed -i 's/\/usr\/lib64\/R/${R_HOME}/g' /usr/lib64/R/bin/R
-sed -i 's/\/usr\/lib64\/R/${R_HOME}/g' /usr/lib64/R/lib64/R/bin/R
+sed -i 's/\/usr\/lib64\/R\/lib64\/R/${R_HOME}/g' /usr/lib64/R/bin/R
+sed -i 's/\/usr\/lib64\/R\/lib64\/R/${R_HOME}/g' /usr/lib64/R/lib64/R/bin/R
 
-mkdir /usr/lib64/R/extlib
-cp /usr/local/lib64/zlib/lib/libz.so.1      /usr/lib64/R/extlib
-cp /usr/local/lib64/bzip2/lib/libbz2.so.1   /usr/lib64/R/extlib
-cp /usr/local/lib64/xz/lib/liblzma.so.5     /usr/lib64/R/extlib
-cp /usr/local/lib64/pcre/lib/libpcre.so.1   /usr/lib64/R/extlib
+mkdir /usr/lib64/R/lib64/R/extlib
+cp /usr/local/lib64/zlib/lib/libz.so.1      /usr/lib64/R/lib64/R/extlib
+cp /usr/local/lib64/bzip2/lib/libbz2.so.1   /usr/lib64/R/lib64/R/extlib
+cp /usr/local/lib64/xz/lib/liblzma.so.5     /usr/lib64/R/lib64/R/extlib
+cp /usr/local/lib64/pcre/lib/libpcre.so.1   /usr/lib64/R/lib64/R/extlib
 
 case $OSVER in
     centos*)
-        cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/extlib
-        cp /usr/lib64/libgfortran.so.1              /usr/lib64/R/extlib
+        cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgfortran.so.1              /usr/lib64/R/lib64/R/extlib
     ;;
     suse*)
-        cp /usr/local/gcc/lib64/libgomp.so.1        /usr/lib64/R/extlib
-        cp /usr/local/gcc/lib64/libgfortran.so.3    /usr/lib64/R/extlib
+        cp /usr/local/gcc/lib64/libgomp.so.1        /usr/lib64/R/lib64/R/extlib
+        cp /usr/local/gcc/lib64/libgfortran.so.3    /usr/lib64/R/lib64/R/extlib
     ;;
 esac
 

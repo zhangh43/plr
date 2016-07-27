@@ -16,7 +16,7 @@ R_RPM=R-$(R_VER)-$(R_REL).$(ARCH).rpm
 
 PLR_GPPKG_VER=ossv$(PLR_OSS_VER)_pv$(PLR_VER).$(PLR_REL)_gpdb4.3orca
 GPPKG_VERSION=$(PLR_GPPKG_VER)
-PLR_RPM_FLAGS="--define 'plr_dir $(PLR_DIR)' --define 'plr_ver $(PLR_VER)' --define 'plr_rel $(PLR_REL)' --define 'r_ver $(R_VER)' --define 'r_dir $(R_DIR)'"
+PLR_RPM_FLAGS="--define 'plr_dir $(PLR_DIR)' --define 'plr_ver $(PLR_VER)' --define 'plr_rel $(PLR_REL)' --define 'r_ver $(R_VER)' --define 'r_dir $(R_HOME)'"
 PLR_RPM=plr-$(PLR_VER)-$(PLR_REL).$(ARCH).rpm
 PLR_GPPKG=plr-$(PLR_GPPKG_VER)-$(OS)-$(ARCH).gppkg
 

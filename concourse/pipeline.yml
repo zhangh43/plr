@@ -245,7 +245,7 @@ resources:
     region_name: {{aws_region_name}}
     access_key_id: {{aws_access_key_id}}
     secret_access_key: {{aws_secret_access_key}}
-    versioned_file: gpdb/bin_r_centos5.tar.gz
+    versioned_file: r/bin_r_centos5.tar.gz
 
 # GPDB
 
@@ -347,7 +347,7 @@ resources:
     region_name: {{aws_region_name}}
     access_key_id: {{aws_access_key_id}}
     secret_access_key: {{aws_secret_access_key}}
-    versioned_file: gpdb/bin_r_suse11.tar.gz
+    versioned_file: r/bin_r_suse11.tar.gz
 
 # GPDB
 
