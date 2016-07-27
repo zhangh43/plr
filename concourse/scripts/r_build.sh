@@ -110,10 +110,14 @@ case $OSVER in
     centos*)
         cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
         cp /usr/lib64/libgfortran.so.1              /usr/lib64/R/lib64/R/extlib
+        cp /lib64/libssl.so.6                       /usr/lib64/R/lib64/R/extlib
+        cp /lib64/libcrypto.so.6                    /usr/lib64/R/lib64/R/extlib
     ;;
     suse*)
         cp /usr/local/gcc/lib64/libgomp.so.1        /usr/lib64/R/lib64/R/extlib
         cp /usr/local/gcc/lib64/libgfortran.so.3    /usr/lib64/R/lib64/R/extlib
+        cp /lib64/libssl.so.1.0.0                   /usr/lib64/R/lib64/R/extlib
+        cp /lib64/libcrypto.so.1.0.0                /usr/lib64/R/lib64/R/extlib
     ;;
 esac
 
