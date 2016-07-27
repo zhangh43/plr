@@ -105,6 +105,7 @@ cp /usr/local/lib64/zlib/lib/libz.so.1      /usr/lib64/R/lib64/R/extlib
 cp /usr/local/lib64/bzip2/lib/libbz2.so.1   /usr/lib64/R/lib64/R/extlib
 cp /usr/local/lib64/xz/lib/liblzma.so.5     /usr/lib64/R/lib64/R/extlib
 cp /usr/local/lib64/pcre/lib/libpcre.so.1   /usr/lib64/R/lib64/R/extlib
+cp /usr/local/curl/lib/libcurl.so.4         /usr/lib64/R/lib64/R/extlib
 
 case $OSVER in
     centos*)
