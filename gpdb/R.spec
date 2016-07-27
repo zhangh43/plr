@@ -19,12 +19,12 @@ cp -RL %{r_dir}/*             %{buildroot}/temp/ext/R-%{r_ver}
 
 %post
 echo "export R_HOME=\$GPHOME/ext/R-%{r_ver}" >> $GPHOME/greenplum_path.sh
-echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/lib64:\$GPHOME/ext/R-%{r_ver}/lib:\$GPHOME/ext/R-%{r_ver}/extlib" >> $GPHOME/greenplum_path.sh
+echo "export LD_LIBRARY_PATH=/lib64:\$GPHOME/ext/R-%{r_ver}/lib:\$GPHOME/ext/R-%{r_ver}/extlib:\$LD_LIBRARY_PATH" >> $GPHOME/greenplum_path.sh
 echo "export PATH=\$GPHOME/ext/R-%{r_ver}/bin:\$PATH" >> $GPHOME/greenplum_path.sh
 
 %postun
 sed -i".bk" "s|export R_HOME=\$GPHOME/ext/R-%{r_ver}||g" $GPHOME/greenplum_path.sh
-sed -i".bk" "s|export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/lib64:\$GPHOME/ext/R-%{r_ver}/lib::\$GPHOME/ext/R-%{r_ver}/extlib||g" $GPHOME/greenplum_path.sh
+sed -i".bk" "s|export LD_LIBRARY_PATH=/lib64:\$GPHOME/ext/R-%{r_ver}/lib::\$GPHOME/ext/R-%{r_ver}/extlib:\$LD_LIBRARY_PATH||g" $GPHOME/greenplum_path.sh
 sed -i".bk" "s|export PATH=\$GPHOME/ext/R-%{r_ver}/bin:\$PATH||g" $GPHOME/greenplum_path.sh
 rm -rf $GPHOME/greenplum_path.sh.bk
 
