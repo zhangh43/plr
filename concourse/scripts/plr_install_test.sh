@@ -22,5 +22,10 @@ cd $TMPDIR
 
 export USE_PGXS=1
 # We need to first run "make" to generate plr.sql
+if [ "$OSVER" == "suse11" ]; then
+    # Official GPDB for SUSE 11 comes with very old version of glibc, getting rid of it here
+    unset LD_LIBRARY_PATH
+fi
 make || exit 1
+source ~/.bashrc
 make installcheck || exit 1
