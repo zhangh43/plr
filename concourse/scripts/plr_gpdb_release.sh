@@ -23,6 +23,8 @@ pushd /usr/lib64
 tar zxvf $PLRBIN.tar.gz
 popd
 
+export R_HOME=/usr/lib64/R/lib64/R
+export USE_PGXS=1
 pushd plr_src
 make clean
 make
