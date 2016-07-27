@@ -21,4 +21,6 @@ cp -r plr_src $TMPDIR
 cd $TMPDIR
 
 export USE_PGXS=1
+# We need to first run "make" to generate plr.sql
+make || exit 1
 make installcheck || exit 1

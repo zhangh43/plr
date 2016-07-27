@@ -5,5 +5,11 @@ Version: #gppkgver
 GPDBVersion: 4.3
 Description: Provides a procedural language implementation of R for the Greenplum Database. 
 PostInstall:
-- Master: "echo 'Please source your $GPHOME/greenplum_path.sh file and restart the database.';
-          echo 'You can enable PL/R by running createlang plr -d mydatabase.';"
+- Master: "echo '-';
+          echo '==========================================================================';
+          echo 'PL/R installation is complete! To proceed, follow these steps:';
+          echo '1. Source your new $GPHOME/greenplum_path.sh file and restart the database.';
+          echo '2. Enable PL/R language in one of your databases by running \"psql -f $GPHOME/share/postgresql/plr.sql -d mydatabase\"';
+          echo 'Alternatively you can run \"createlang plr -d mydatabase\", but in this case';
+          echo 'you would not have R-specific in-database functions';
+          echo '==========================================================================';"
