@@ -2,7 +2,7 @@
  * PL/R - PostgreSQL support for R as a
  *	      procedural language (PL)
  *
- * Copyright (c) 2003-2013 by Joseph E. Conway
+ * Copyright (c) 2003-2015 by Joseph E. Conway
  * ALL RIGHTS RESERVED
  * 
  * Joe Conway <mail@joeconway.com>
@@ -216,7 +216,7 @@ pg_array_get_r(Datum dvalue, FmgrInfo out_func, int typlen, bool typbyval, char 
 						 errmsg("direct array passthrough attempted for unsupported type")));
 		}
 
-		if (ndim > 0)
+		if (ndim > 1)
 		{
 			SEXP	matrix_dims;
 
@@ -305,7 +305,7 @@ pg_array_get_r(Datum dvalue, FmgrInfo out_func, int typlen, bool typbyval, char 
 		pfree(elem_values);
 		pfree(elem_nulls);
 
-		if (ndim > 0)
+		if (ndim > 1)
 		{
 			SEXP	matrix_dims;
 
@@ -1003,7 +1003,7 @@ get_scalar_datum(SEXP rval, Oid result_typid, FmgrInfo result_in_func, bool *isn
 {
 	Datum		dvalue;
 	SEXP		obj;
-	const char *value;
+	const char *value = NULL;
 
 	/*
 	 * Element type is zero, we don't have an array, so coerce to string
@@ -1015,15 +1015,30 @@ get_scalar_datum(SEXP rval, Oid result_typid, FmgrInfo result_in_func, bool *isn
 	if (result_typid != BYTEAOID)
 	{
 		PROTECT(obj = coerce_to_char(rval));
-		if (STRING_ELT(obj, 0) == NA_STRING)
+		/*
+ 		 * passing a null into something like
+ 		 * return as.real(NULL) will return numeric(0)
+ 		 * which has a length of 0
+ 		 */		
+		if ( (isNumeric(rval) && length(rval) == 0) || STRING_ELT(obj, 0) == NA_STRING)
 		{
 			UNPROTECT(1);
 			*isnull = true;
 			dvalue = (Datum) 0;
 			return dvalue;
 		}
-		value = CHAR(STRING_ELT(obj, 0));
-		UNPROTECT(1);
+ 		obj = STRING_ELT(obj, 0);
+ 		if (TYPEOF(obj) == CHARSXP )
+ 		{
+ 			value = CHAR(obj);
+ 		}
+ 		else
+ 		{
+ 			ereport(ERROR,
+ 					(errcode(ERRCODE_DATA_EXCEPTION),
+ 					 errmsg("R interpreter expression evaluation error"),
+ 					 errdetail("return type cannot be coerced to char")));
+ 		}		UNPROTECT(1);
 		
 		if (value != NULL)
 		{
