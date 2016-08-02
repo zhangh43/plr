@@ -84,17 +84,103 @@ select load_r_typenames();
  OK
 (1 row)
 
-CREATE TABLE plr_modules (
-  modseq int4,
-  modsrc text
-);
-NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'modseq' as the Greenplum Database data distribution key for this table.
-HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
-INSERT INTO plr_modules VALUES (0, 'pg.test.module.load <-function(msg) {print(msg)}');
-select reload_plr_modules();
- reload_plr_modules 
---------------------
- OK
+--
+-- test simple input/output types
+--
+CREATE OR REPLACE FUNCTION rint2(i int2) RETURNS int2 AS $$
+return (as.integer(i))
+$$ LANGUAGE plr;
+select rint2(1::int2);
+ rint2 
+-------
+     1
+(1 row)
+
+select rint2(NULL);
+ rint2 
+-------
+      
+(1 row)
+
+CREATE OR REPLACE FUNCTION rint4(i int4) RETURNS int4 AS $$
+return (as.integer(i))
+$$ LANGUAGE plr;
+select rint4(1::int4);
+ rint4 
+-------
+     1
+(1 row)
+
+select rint4(NULL);
+ rint4 
+-------
+      
+(1 row)
+
+CREATE OR REPLACE FUNCTION rint8(i int8) RETURNS int8 AS $$
+return (as.integer(i))
+$$ LANGUAGE plr;
+select rint8(1::int8);
+ rint8 
+-------
+     1
+(1 row)
+
+select rint8(NULL);
+ rint8 
+-------
+      
+(1 row)
+
+CREATE OR REPLACE FUNCTION rbool(b bool) RETURNS bool AS $$
+return (as.logical(b))
+$$ LANGUAGE plr;
+select rbool('t');
+ rbool 
+-------
+ t
+(1 row)
+
+select rbool('f');
+ rbool 
+-------
+ f
+(1 row)
+
+select rbool(NULL);
+ rbool 
+-------
+ 
+(1 row)
+
+CREATE OR REPLACE FUNCTION rfloat4(f float4) RETURNS float4 AS $$
+return (as.numeric(f))
+$$ LANGUAGE plr;
+select rfloat4(1::int4);
+ rfloat4 
+---------
+       1
+(1 row)
+
+select rfloat4(NULL);
+ rfloat4 
+---------
+        
+(1 row)
+
+CREATE OR REPLACE FUNCTION rfloat8(f float8) RETURNS float8 AS $$
+return (as.numeric(f))
+$$ LANGUAGE plr;
+select rfloat8(1::float8);
+ rfloat8 
+---------
+       1
+(1 row)
+
+select rfloat8(NULL);
+ rfloat8 
+---------
+        
 (1 row)
 
 --
@@ -161,7 +247,7 @@ select reval('a <- sd(c(1,2,3)); b <- mean(c(1,2,3)); a + b');
 
 create or replace function "commandArgs"() returns text[] as '' language 'plr';
 select "commandArgs"();
-              commandArgs               
+                  commandArgs                   
 ------------------------------------------------
  {PL/R,--slave,--silent,--no-save,--no-restore}
 (1 row)
@@ -225,10 +311,7 @@ select sprintf('%s is %s feet tall', 'Sven', '7');
 --
 -- test aggregates
 --
-create table foo(f0 int, f1 text, f2 float8) with oids;
-NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'f0' as the Greenplum Database data distribution key for this table.
-HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
-NOTICE:  OIDS=TRUE is not recommended for user-created tables. Use OIDS=FALSE to prevent wrap-around of the OID counter
+create table foo(f0 int, f1 text, f2 float8) distributed randomly;
 insert into foo values(1,'cat1',1.21);
 insert into foo values(2,'cat1',1.24);
 insert into foo values(3,'cat1',1.18);
@@ -564,13 +647,8 @@ select * from test_spi_execp('sp','oid','text') as t(typeid oid, typename name);
      26 | oid
 (2 rows)
 
-create or replace function test_spi_lastoid(text) returns text as 'pg.spi.exec(arg1); pg.spi.lastoid()/pg.spi.lastoid()' language 'plr';
-select test_spi_lastoid('insert into foo values(10,''cat3'',3.333)') as "ONE";
- ONE 
------
- 1
-(1 row)
-
+--create or replace function test_spi_lastoid(text) returns text as 'pg.spi.exec(arg1); pg.spi.lastoid()/pg.spi.lastoid()' language 'plr';
+--select test_spi_lastoid('insert into foo values(10,''cat3'',3.333)') as "ONE";
 --
 -- test NULL handling
 --
@@ -686,197 +764,6 @@ select arr3d('{{{111,112},{121,122},{131,132}},{{211,212},{221,222},{231,232}}}'
  {{{111,112},{121,122},{131,132}},{{211,212},{221,222},{231,232}}}
 (1 row)
 
---
--- Trigger support tests
---
---
--- test that NULL return value suppresses the change
---
-create or replace function rejectfoo() returns trigger as 'return(NULL)' language plr;
-create trigger footrig before insert or update or delete on foo for each row execute procedure rejectfoo();
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-insert into foo values(11,'cat99',1.89);
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-update foo set f1 = 'zzz';
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-delete from foo;
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-drop trigger footrig on foo;
---
--- test that returning OLD/NEW as appropriate allow the change unmodified
---
-create or replace function acceptfoo() returns trigger as '
-switch (pg.tg.op, INSERT = return(pg.tg.new), UPDATE = return(pg.tg.new), DELETE = return(pg.tg.old))
-' language plr;
-create trigger footrig before insert or update or delete on foo for each row execute procedure acceptfoo();
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-insert into foo values(11,'cat99',1.89);
-select count(*) from foo;
- count 
--------
-    11
-(1 row)
-
-update foo set f1 = 'zzz' where f0 = 11;
-select * from foo where f0 = 11;
- f0 | f1  |  f2  
-----+-----+------
- 11 | zzz | 1.89
-(1 row)
-
-delete from foo where f0 = 11;
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-drop trigger footrig on foo;
---
--- test that returning modifed tuple successfully modifies the result
---
-create or replace function modfoo() returns trigger as '
-if (pg.tg.op == "INSERT")
-{
-  retval <- pg.tg.new
-  retval$f1 <- "xxx"
-}
-if (pg.tg.op == "UPDATE")
-{
-  retval <- pg.tg.new
-  retval$f1 <- "aaa"
-}
-if (pg.tg.op == "DELETE")
-  retval <- pg.tg.old
-return(retval)
-' language plr;
-create trigger footrig before insert or update or delete on foo for each row execute procedure modfoo();
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-insert into foo values(11,'cat99',1.89);
-select * from foo where f0 = 11;
- f0 | f1  |  f2  
-----+-----+------
- 11 | xxx | 1.89
-(1 row)
-
-update foo set f1 = 'zzz' where f0 = 11;
-select * from foo where f0 = 11;
- f0 | f1  |  f2  
-----+-----+------
- 11 | aaa | 1.89
-(1 row)
-
-delete from foo where f0 = 11;
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-drop trigger footrig on foo;
---
--- test statement level triggers and verify all arguments come
--- across correctly
---
-create or replace function foonotice() returns trigger as '
-msg <- paste(pg.tg.name,pg.tg.relname,pg.tg.when,pg.tg.level,pg.tg.op,pg.tg.args[1],pg.tg.args[2])
-pg.thrownotice(msg)
-return(NULL)
-' language plr;
-create trigger footrig after insert or update or delete on foo for each row execute procedure foonotice();
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-insert into foo values(11,'cat99',1.89);
-NOTICE:  footrig foo AFTER ROW INSERT NA NA  (seg0 gavinmac:40000 pid=20919)
-select count(*) from foo;
- count 
--------
-    11
-(1 row)
-
-update foo set f1 = 'zzz' where f0 = 11;
-NOTICE:  footrig foo AFTER ROW UPDATE NA NA  (seg0 gavinmac:40000 pid=20919)
-select * from foo where f0 = 11;
- f0 | f1  |  f2  
-----+-----+------
- 11 | zzz | 1.89
-(1 row)
-
-delete from foo where f0 = 11;
-NOTICE:  footrig foo AFTER ROW DELETE NA NA  (seg0 gavinmac:40000 pid=20919)
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-drop trigger footrig on foo;
-create trigger footrig after insert or update or delete on foo for each statement execute procedure foonotice('hello','world');
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-insert into foo values(11,'cat99',1.89);
-NOTICE:  footrig foo AFTER STATEMENT INSERT hello world  (seg0 gavinmac:40000 pid=20919)
-select count(*) from foo;
- count 
--------
-    11
-(1 row)
-
-update foo set f1 = 'zzz' where f0 = 11;
-NOTICE:  footrig foo AFTER STATEMENT UPDATE hello world  (seg0 gavinmac:40000 pid=20919)
-select * from foo where f0 = 11;
- f0 | f1  |  f2  
-----+-----+------
- 11 | zzz | 1.89
-(1 row)
-
-delete from foo where f0 = 11;
-NOTICE:  footrig foo AFTER STATEMENT DELETE hello world  (seg0 gavinmac:40000 pid=20919)
-select count(*) from foo;
- count 
--------
-    10
-(1 row)
-
-drop trigger footrig on foo;
 -- Test cursors: creating, scrolling forward, closing
 CREATE OR REPLACE FUNCTION cursor_fetch_test(integer,boolean) RETURNS SETOF integer AS 'plan<-pg.spi.prepare("SELECT * FROM generate_series(1,10)"); cursor<-pg.spi.cursor_open("curs",plan); dat<-pg.spi.cursor_fetch(cursor,arg2,arg1); pg.spi.cursor_close(cursor); return (dat);' language 'plr';
 SELECT * FROM cursor_fetch_test(1,true);
@@ -907,14 +794,6 @@ SELECT * FROM cursor_fetch_test(20,true);
                 10
 (10 rows)
 
---Test cursors: scrolling backwards
-CREATE OR REPLACE FUNCTION cursor_direction_test() RETURNS SETOF integer AS'plan<-pg.spi.prepare("SELECT * FROM generate_series(1,10)"); cursor<-pg.spi.cursor_open("curs",plan); dat<-pg.spi.cursor_fetch(cursor,TRUE,as.integer(3)); dat2<-pg.spi.cursor_fetch(cursor,FALSE,as.integer(3)); pg.spi.cursor_close(cursor); return (dat2);' language 'plr';
-SELECT * FROM cursor_direction_test();
-ERROR:  R interpreter expression evaluation error
-DETAIL:  Error in pg.spi.cursor_fetch(cursor, FALSE, as.integer(3)) : 
-  error in SQL statement : backward scan is not supported in this version of Greenplum Database
-CONTEXT:  In R support function pg.spi.cursor_fetch
-In PL/R function cursor_direction_test
 --Test cursors: Passing arguments to a plan
 CREATE OR REPLACE FUNCTION cursor_fetch_test_arg(integer) RETURNS SETOF integer AS 'plan<-pg.spi.prepare("SELECT * FROM generate_series(1,$1)",c(INT4OID)); cursor<-pg.spi.cursor_open("curs",plan,list(arg1)); dat<-pg.spi.cursor_fetch(cursor,TRUE,arg1); pg.spi.cursor_close(cursor); return (dat);' language 'plr';
 SELECT * FROM cursor_fetch_test_arg(3);
@@ -949,19 +828,13 @@ NOTICE:  drop cascades to language plr
 NOTICE:  drop cascades to function restore_df(bytea)
 NOTICE:  drop cascades to function test_serialize(text)
 NOTICE:  drop cascades to function cursor_fetch_test_arg(integer)
-NOTICE:  drop cascades to function cursor_direction_test()
 NOTICE:  drop cascades to function cursor_fetch_test(integer,boolean)
-NOTICE:  drop cascades to function foonotice()
-NOTICE:  drop cascades to function modfoo()
-NOTICE:  drop cascades to function acceptfoo()
-NOTICE:  drop cascades to function rejectfoo()
 NOTICE:  drop cascades to function arr3d(integer[])
 NOTICE:  drop cascades to function arr3d(integer[],integer,integer,integer)
 NOTICE:  drop cascades to function test_in_m_tup(integer[])
 NOTICE:  drop cascades to function test_foo(foo)
 NOTICE:  drop cascades to function r_max(integer,integer)
 NOTICE:  drop cascades to function r_test(double precision)
-NOTICE:  drop cascades to function test_spi_lastoid(text)
 NOTICE:  drop cascades to function test_spi_execp(text,text,text)
 NOTICE:  drop cascades to function test_spi_prep(text)
 NOTICE:  drop cascades to function fetch_pgoid(text)
@@ -1010,6 +883,12 @@ NOTICE:  drop cascades to function vec(double precision[])
 NOTICE:  drop cascades to function paste(text[],text[],text)
 NOTICE:  drop cascades to function throw_notice(text)
 NOTICE:  drop cascades to function pg_test_install(text)
+NOTICE:  drop cascades to function rfloat8(double precision)
+NOTICE:  drop cascades to function rfloat4(real)
+NOTICE:  drop cascades to function rbool(boolean)
+NOTICE:  drop cascades to function rint8(bigint)
+NOTICE:  drop cascades to function rint4(integer)
+NOTICE:  drop cascades to function rint2(smallint)
 NOTICE:  drop cascades to function r_version()
 NOTICE:  drop cascades to function load_r_typenames()
 NOTICE:  drop cascades to function r_typenames()
@@ -1018,6 +897,7 @@ NOTICE:  drop cascades to function plr_environ()
 DROP TYPE IF EXISTS r_typename cascade; 
 DROP TYPE IF EXISTS r_version_type CASCADE; 
 DROP TABLE IF EXISTS plr_modules CASCADE; 
+NOTICE:  table "plr_modules" does not exist, skipping
 DROP TYPE IF EXISTS dtup CASCADE; 
 DROP TYPE IF EXISTS mtup CASCADE; 
 DROP TYPE IF EXISTS vtup CASCADE; 

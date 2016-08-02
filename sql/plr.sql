@@ -4,14 +4,49 @@
 -- make typenames available in the global namespace
 select load_r_typenames();
 
+--
+-- test simple input/output types
+--
 
-CREATE TABLE plr_modules (
-  modseq int4,
-  modsrc text
-);
+CREATE OR REPLACE FUNCTION rint2(i int2) RETURNS int2 AS $$
+return (as.integer(i))
+$$ LANGUAGE plr;
+select rint2(1::int2);
+select rint2(NULL);
 
-INSERT INTO plr_modules VALUES (0, 'pg.test.module.load <-function(msg) {print(msg)}');
-select reload_plr_modules();
+CREATE OR REPLACE FUNCTION rint4(i int4) RETURNS int4 AS $$
+return (as.integer(i))
+$$ LANGUAGE plr;
+select rint4(1::int4);
+select rint4(NULL);
+
+CREATE OR REPLACE FUNCTION rint8(i int8) RETURNS int8 AS $$
+return (as.integer(i))
+$$ LANGUAGE plr;
+select rint8(1::int8);
+select rint8(NULL);
+
+CREATE OR REPLACE FUNCTION rbool(b bool) RETURNS bool AS $$
+return (as.logical(b))
+$$ LANGUAGE plr;
+
+select rbool('t');
+select rbool('f');
+select rbool(NULL);
+
+
+CREATE OR REPLACE FUNCTION rfloat4(f float4) RETURNS float4 AS $$
+return (as.numeric(f))
+$$ LANGUAGE plr;
+select rfloat4(1::int4);
+select rfloat4(NULL);
+
+CREATE OR REPLACE FUNCTION rfloat8(f float8) RETURNS float8 AS $$
+return (as.numeric(f))
+$$ LANGUAGE plr;
+select rfloat8(1::float8);
+select rfloat8(NULL);
+
 
 --
 -- user defined R function test
@@ -72,7 +107,7 @@ select sprintf('%s is %s feet tall', 'Sven', '7');
 -- test aggregates
 --
 
-create table foo(f0 int, f1 text, f2 float8) with oids;
+create table foo(f0 int, f1 text, f2 float8) distributed randomly;
 insert into foo values(1,'cat1',1.21);
 insert into foo values(2,'cat1',1.24);
 insert into foo values(3,'cat1',1.18);
@@ -203,8 +238,8 @@ select test_spi_prep('select oid, typname from pg_type where typname = $1 or typ
 create or replace function test_spi_execp(text, text, text) returns setof record as 'pg.spi.execp(pg.reval(arg1), list(arg2,arg3))' language 'plr';
 select * from test_spi_execp('sp','oid','text') as t(typeid oid, typename name);
 
-create or replace function test_spi_lastoid(text) returns text as 'pg.spi.exec(arg1); pg.spi.lastoid()/pg.spi.lastoid()' language 'plr';
-select test_spi_lastoid('insert into foo values(10,''cat3'',3.333)') as "ONE";
+--create or replace function test_spi_lastoid(text) returns text as 'pg.spi.exec(arg1); pg.spi.lastoid()/pg.spi.lastoid()' language 'plr';
+--select test_spi_lastoid('insert into foo values(10,''cat3'',3.333)') as "ONE";
 
 --
 -- test NULL handling
@@ -258,107 +293,12 @@ select f1[0][1][1] is null as "NULL" from (select '{{{111,112},{121,122},{131,13
 create or replace function arr3d(_int4) returns int4[] as 'return(arg1)' language 'plr' WITH (isstrict);
 select arr3d('{{{111,112},{121,122},{131,132}},{{211,212},{221,222},{231,232}}}');
 
---
--- Trigger support tests
---
-
---
--- test that NULL return value suppresses the change
---
-create or replace function rejectfoo() returns trigger as 'return(NULL)' language plr;
-create trigger footrig before insert or update or delete on foo for each row execute procedure rejectfoo();
-select count(*) from foo;
-insert into foo values(11,'cat99',1.89);
-select count(*) from foo;
-update foo set f1 = 'zzz';
-select count(*) from foo;
-delete from foo;
-select count(*) from foo;
-drop trigger footrig on foo;
-
---
--- test that returning OLD/NEW as appropriate allow the change unmodified
---
-create or replace function acceptfoo() returns trigger as '
-switch (pg.tg.op, INSERT = return(pg.tg.new), UPDATE = return(pg.tg.new), DELETE = return(pg.tg.old))
-' language plr;
-create trigger footrig before insert or update or delete on foo for each row execute procedure acceptfoo();
-select count(*) from foo;
-insert into foo values(11,'cat99',1.89);
-select count(*) from foo;
-update foo set f1 = 'zzz' where f0 = 11;
-select * from foo where f0 = 11;
-delete from foo where f0 = 11;
-select count(*) from foo;
-drop trigger footrig on foo;
-
---
--- test that returning modifed tuple successfully modifies the result
---
-create or replace function modfoo() returns trigger as '
-if (pg.tg.op == "INSERT")
-{
-  retval <- pg.tg.new
-  retval$f1 <- "xxx"
-}
-if (pg.tg.op == "UPDATE")
-{
-  retval <- pg.tg.new
-  retval$f1 <- "aaa"
-}
-if (pg.tg.op == "DELETE")
-  retval <- pg.tg.old
-return(retval)
-' language plr;
-create trigger footrig before insert or update or delete on foo for each row execute procedure modfoo();
-select count(*) from foo;
-insert into foo values(11,'cat99',1.89);
-select * from foo where f0 = 11;
-update foo set f1 = 'zzz' where f0 = 11;
-select * from foo where f0 = 11;
-delete from foo where f0 = 11;
-select count(*) from foo;
-drop trigger footrig on foo;
-
---
--- test statement level triggers and verify all arguments come
--- across correctly
---
-create or replace function foonotice() returns trigger as '
-msg <- paste(pg.tg.name,pg.tg.relname,pg.tg.when,pg.tg.level,pg.tg.op,pg.tg.args[1],pg.tg.args[2])
-pg.thrownotice(msg)
-return(NULL)
-' language plr;
-
-create trigger footrig after insert or update or delete on foo for each row execute procedure foonotice();
-select count(*) from foo;
-insert into foo values(11,'cat99',1.89);
-select count(*) from foo;
-update foo set f1 = 'zzz' where f0 = 11;
-select * from foo where f0 = 11;
-delete from foo where f0 = 11;
-select count(*) from foo;
-drop trigger footrig on foo;
-
-create trigger footrig after insert or update or delete on foo for each statement execute procedure foonotice('hello','world');
-select count(*) from foo;
-insert into foo values(11,'cat99',1.89);
-select count(*) from foo;
-update foo set f1 = 'zzz' where f0 = 11;
-select * from foo where f0 = 11;
-delete from foo where f0 = 11;
-select count(*) from foo;
-drop trigger footrig on foo;
 
 -- Test cursors: creating, scrolling forward, closing
 CREATE OR REPLACE FUNCTION cursor_fetch_test(integer,boolean) RETURNS SETOF integer AS 'plan<-pg.spi.prepare("SELECT * FROM generate_series(1,10)"); cursor<-pg.spi.cursor_open("curs",plan); dat<-pg.spi.cursor_fetch(cursor,arg2,arg1); pg.spi.cursor_close(cursor); return (dat);' language 'plr';
 SELECT * FROM cursor_fetch_test(1,true);
 SELECT * FROM cursor_fetch_test(2,true);
 SELECT * FROM cursor_fetch_test(20,true);
-
---Test cursors: scrolling backwards
-CREATE OR REPLACE FUNCTION cursor_direction_test() RETURNS SETOF integer AS'plan<-pg.spi.prepare("SELECT * FROM generate_series(1,10)"); cursor<-pg.spi.cursor_open("curs",plan); dat<-pg.spi.cursor_fetch(cursor,TRUE,as.integer(3)); dat2<-pg.spi.cursor_fetch(cursor,FALSE,as.integer(3)); pg.spi.cursor_close(cursor); return (dat2);' language 'plr';
-SELECT * FROM cursor_direction_test();
 
 --Test cursors: Passing arguments to a plan
 CREATE OR REPLACE FUNCTION cursor_fetch_test_arg(integer) RETURNS SETOF integer AS 'plan<-pg.spi.prepare("SELECT * FROM generate_series(1,$1)",c(INT4OID)); cursor<-pg.spi.cursor_open("curs",plan,list(arg1)); dat<-pg.spi.cursor_fetch(cursor,TRUE,arg1); pg.spi.cursor_close(cursor); return (dat);' language 'plr';
