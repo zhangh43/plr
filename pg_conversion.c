@@ -1038,7 +1038,8 @@ get_scalar_datum(SEXP rval, Oid result_typid, FmgrInfo result_in_func, bool *isn
  					(errcode(ERRCODE_DATA_EXCEPTION),
  					 errmsg("R interpreter expression evaluation error"),
  					 errdetail("return type cannot be coerced to char")));
- 		}		UNPROTECT(1);
+ 		}		
+		UNPROTECT(1);
 		
 		if (value != NULL)
 		{
