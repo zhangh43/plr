@@ -2,7 +2,7 @@
  * PL/R - PostgreSQL support for R as a
  *	      procedural language (PL)
  *
- * Copyright (c) 2003-2013 by Joseph E. Conway
+ * Copyright (c) 2003-2015 by Joseph E. Conway
  * ALL RIGHTS RESERVED
  * 
  * Joe Conway <mail@joeconway.com>
@@ -180,12 +180,11 @@ static char *getModulesSql(Oid nspOid);
 #ifdef HAVE_WINDOW_FUNCTIONS
 static void WinGetFrameData(WindowObject winobj, int argno, Datum *dvalues, bool *isnull, int *numels, bool *has_nulls);
 #endif
-//static void plr_resolve_polymorphic_argtypes(int numargs,
-//											 Oid *argtypes, char *argmodes,
-//											 Node *call_expr, bool forValidator,
-//											 const char *proname);
+static void plr_resolve_polymorphic_argtypes(int numargs,
+											 Oid *argtypes, char *argmodes,
+											 Node *call_expr, bool forValidator,
+											 const char *proname);
 
-static char **fetchArgNames(HeapTuple procTup, int nargs);
 
 /*
  * plr_call_handler -	This is the only visible function
@@ -1054,7 +1053,7 @@ do_compile(FunctionCallInfo fcinfo,
 			ReturnSetInfo  *rsinfo = (ReturnSetInfo *) fcinfo->resultinfo;
 			
 			/* check to see if caller supports us returning a tuplestore */
-			if (!rsinfo || !(rsinfo->allowedModes & SFRM_Materialize))
+			if (!rsinfo || !(rsinfo->allowedModes & SFRM_Materialize) || rsinfo->expectedDesc == NULL)
 				ereport(ERROR,
 						(errcode(ERRCODE_SYNTAX_ERROR),
 				 		errmsg("materialize mode required, but it is not "
@@ -1144,30 +1143,29 @@ do_compile(FunctionCallInfo fcinfo,
 	if (!is_trigger)
 	{
 		int		i;
-		// bool		forValidator = false;
-		// int			numargs;
-		// Oid		   *argtypes;
-		// char	  **argnames;
-		// char	   *argmodes;
+		bool		forValidator = false;
+		int			numargs;
+		Oid		   *argtypes;
+		char	  **argnames;		
+		char	   *argmodes;
 
-		// numargs = get_func_arg_info(procTup,
-		// 							&argtypes, &argnames, &argmodes);
+		numargs = get_func_arg_info(procTup,
+									&argtypes, &argnames, &argmodes);
 
-		// plr_resolve_polymorphic_argtypes(numargs, argtypes, argmodes,
-		// 									 fcinfo->flinfo->fn_expr,
-		// 									 forValidator,
-		// 									 function->proname);
-		GET_ARG_NAMES;
+		plr_resolve_polymorphic_argtypes(numargs, argtypes, argmodes,
+		 									 fcinfo->flinfo->fn_expr,
+		 									 forValidator,
+											 function->proname);
 
 		function->nargs = procStruct->pronargs;
 		for (i = 0; i < function->nargs; i++)
 		{
-			// char		argmode = argmodes ? argmodes[i] : PROARGMODE_IN;
+			 char		argmode = argmodes ? argmodes[i] : PROARGMODE_IN;
 
-			// if (argmode != PROARGMODE_IN &&
-			// 	argmode != PROARGMODE_INOUT &&
-			// 	argmode != PROARGMODE_VARIADIC)
-			// 	continue;
+			 if (argmode != PROARGMODE_IN &&
+			 	argmode != PROARGMODE_INOUT &&
+			 	argmode != PROARGMODE_VARIADIC)
+			 	continue;
 
 			/*
 			 * Since we already did the replacement of polymorphic
@@ -1680,46 +1678,6 @@ plr_error_callback(void *arg)
 		errcontext("In PL/R function %s", (char *) arg);
 }
 
-
-/*
- * Fetch the argument names, if any, from the proargnames field of the
- * pg_proc tuple.  Results are palloc'd.
- *
- * Borrowed from src/pl/plpgsql/src/pl_comp.c
- */
-static char **
-fetchArgNames(HeapTuple procTup, int nargs)
-{
-	Datum		argnamesDatum;
-	bool		isNull;
-	Datum	   *elems;
-	int			nelems;
-	char	  **result;
-	int			i;
-
-	if (nargs == 0)
-		return NULL;
-
-	argnamesDatum = SysCacheGetAttr(PROCOID, procTup, Anum_pg_proc_proargnames,
-									&isNull);
-	if (isNull)
-		return NULL;
-
-	deconstruct_array(DatumGetArrayTypeP(argnamesDatum),
-					  TEXTOID, -1, false, 'i',
-					  &elems, NULL, &nelems);
-
-	if (nelems != nargs)		/* should not happen */
-		elog(ERROR, "proargnames must have the same number of elements as the function has arguments");
-
-	result = (char **) palloc(sizeof(char *) * nargs);
-
-	for (i=0; i < nargs; i++)
-		result[i] = DatumGetCString(DirectFunctionCall1(textout, elems[i]));
-
-	return result;
-}
-
 /*
  * getNamespaceOidFromFunctionOid - Returns the OID of the namespace for the
  * language handler function for the postgresql function with the OID equal
@@ -1891,48 +1849,48 @@ WinGetFrameData(WindowObject winobj, int argno, Datum *dvalues, bool *isnulls, i
  * the error if we can't resolve the types.
  */
 
-// static void
-// plr_resolve_polymorphic_argtypes(int numargs,
-// 								 Oid *argtypes, char *argmodes,
-// 								 Node *call_expr, bool forValidator,
-// 								 const char *proname)
-// {
-// 	int			i;
-// 
-// 	if (!forValidator)
-// 	{
-// 		/* normal case, pass to standard routine */
-// 		if (!resolve_polymorphic_argtypes(numargs, argtypes, argmodes,
-// 										  call_expr))
-// 			ereport(ERROR,
-// 					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
-// 					 errmsg("could not determine actual argument "
-// 							"type for polymorphic function \"%s\"",
-// 							proname)));
-// 	}
-// 	else
-// 	{
-// 		/* special validation case */
-// 		for (i = 0; i < numargs; i++)
-// 		{
-// 			switch (argtypes[i])
-// 			{
-// 				case ANYELEMENTOID:
-// 				case ANYNONARRAYOID:
-// 				case ANYENUMOID:		/* XXX dubious */
-// 					argtypes[i] = INT4OID;
-// 					break;
-// 				case ANYARRAYOID:
-// 					argtypes[i] = INT4ARRAYOID;
-// 					break;
-// #ifdef ANYRANGEOID
-// 				case ANYRANGEOID:
-// 					argtypes[i] = INT4RANGEOID;
-// 					break;
-// #endif
-// 				default:
-// 					break;
-// 			}
-// 		}
-// 	}
-// }
+static void
+plr_resolve_polymorphic_argtypes(int numargs,
+ 								 Oid *argtypes, char *argmodes,
+ 								 Node *call_expr, bool forValidator,
+ 								 const char *proname)
+{
+	int			i;
+ 
+ 	if (!forValidator)
+	{
+ 		/* normal case, pass to standard routine */
+ 		if (!resolve_polymorphic_argtypes(numargs, argtypes, argmodes,
+ 										  call_expr))
+ 			ereport(ERROR,
+ 					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
+ 					 errmsg("could not determine actual argument "
+ 							"type for polymorphic function \"%s\"",
+ 							proname)));
+ 	}
+ 	else
+ 	{
+ 		/* special validation case */
+ 		for (i = 0; i < numargs; i++)
+ 		{
+ 			switch (argtypes[i])
+ 			{
+ 				case ANYELEMENTOID:
+ 				/*case ANYNONARRAYOID: */
+ 				/*case ANYENUMOID:*/		/* XXX dubious */
+ 					argtypes[i] = INT4OID;
+ 					break;
+ 				case ANYARRAYOID:
+ 					argtypes[i] = INT4ARRAYOID;
+ 					break;
+#ifdef ANYRANGEOID
+ 				case ANYRANGEOID:
+ 					argtypes[i] = INT4RANGEOID;
+ 					break;
+#endif
+ 				default:
+ 					break;
+ 			}
+ 		}
+ 	}
+}
