@@ -64,7 +64,7 @@
 #include "tcop/tcopprot.h"
 #include "utils/array.h"
 #include "utils/builtins.h"
-#if PG_VERSION_NUM >= 80500
+#if PG_VERSION_NUM >= 80300
 #include "utils/bytea.h"
 #endif
 #include "utils/lsyscache.h"
