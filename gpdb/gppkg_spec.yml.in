@@ -2,7 +2,7 @@ Pkgname: plr
 Architecture: #arch
 OS: #os
 Version: #gppkgver
-GPDBVersion: 5.0
+GPDBVersion: #gpver
 Description: Provides a procedural language implementation of R for the Greenplum Database. 
 PostInstall:
 - Master: "echo '-';
