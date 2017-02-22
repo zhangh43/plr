@@ -3,8 +3,11 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: pivotaldata/plr_centos5_ci
-    tag: 'latest'
+    repository: pivotaldata/centos-gpdb-dev
+    tag: '5'
+    username: {{docker_username}}
+    password: {{docker_password}}
+
 
 inputs:
   - name: gpdb_src
