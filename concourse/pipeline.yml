@@ -447,6 +447,14 @@ resources:
     secret_access_key: {{aws_secret_access_key}}
     versioned_file: tmp/gphdfs.so
 
+# docker
+
+- name: centos-gpdb-dev-5
+  type: docker-image
+  source:
+    repository: pivotaldata/plr_centos5_ci
+    tag: 'latest'
+
 # Timer
 
 - name: gpdb_rebuild_daily
@@ -486,11 +494,13 @@ jobs:
   - aggregate:
     - get: gpdb4_src
     - get: plr_src
+    - get: centos-gpdb-dev-5
     - get: gpdb_rebuild_daily
       trigger: true
   - aggregate:
     - task: gpdb4_centos5_build
       file: plr_src/concourse/gpdb4_centos5_build.yml
+      image: centos-gpdb-dev-5
     - task: gpdb4_centos6_build
       file: plr_src/concourse/gpdb4_centos6_build.yml
     - task: gpdb4_centos7_build
@@ -518,11 +528,13 @@ jobs:
   - aggregate:
     - get: gpdb_src
     - get: plr_src
+    - get: centos-gpdb-dev-5
     - get: gpdb_rebuild_daily
       trigger: true
   - aggregate:
     - task: gpdb_centos5_build
       file: plr_src/concourse/gpdb_centos5_build.yml
+      image: centos-gpdb-dev-5
     - task: gpdb_centos6_build
       file: plr_src/concourse/gpdb_centos6_build.yml
     - task: gpdb_centos7_build
@@ -744,6 +756,7 @@ jobs:
     - get: plr_src
       passed: [plr_centos5_build]
       trigger: true
+    - get: centos-gpdb-dev-5
     - get: bin_gpdb_centos5
       passed: [plr_centos5_build]
     - get: bin_gpdb4git_centos5
@@ -765,6 +778,7 @@ jobs:
     - task: plr_gpdb4off_test
       file: plr_src/concourse/plr_gpdb4off_centos5_test.yml
     - task: plr_gpdb_test
+      image: centos-gpdb-dev-5
       file: plr_src/concourse/plr_gpdb_centos5_test.yml
 
 - name: plr_suse11_test
