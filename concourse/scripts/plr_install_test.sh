@@ -12,7 +12,7 @@ TMPDIR=$4
 cd $WORKDIR
 
 # Install PL/R package
-gppkg -i $PLRBIN/plr-$OSVER.gppkg || exit 1
+gppkg -i $PLRBIN/plr-*.gppkg || exit 1
 source ~/.bashrc
 gpstop -afr
 
