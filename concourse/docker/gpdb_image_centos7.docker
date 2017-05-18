@@ -1,14 +1,35 @@
 FROM centos:7.2.1511
 
+RUN yum install -y yum-plugin-ovl
+
+
 # Install dependencies
 RUN yum -y groupinstall "Development tools"
 RUN yum -y install epel-release ed wget coreutils sed psmisc
 RUN yum -y install readline-devel zlib-devel curl-devel bzip2-devel python-devel  \
                    apr-devel libevent-devel openssl-libs openssl-devel libyaml    \
                    libyaml-devel libxml2 libxml2-devel htop perl-Env libffi-devel \
-                   tetex-latex rsync
+                   rsync
+# Install TeX related packages needed to compile R
+# unable to determine a minimal set of TeX
+RUN yum -y install texlive texlive-latex texlive-xetex texlive-collection-latex \
+		   texlive-collection-latexrecommended texlive-xetex-def        \
+		   texlive-collection-xetex texlive-collection-latexextra       \
+		   texinfo-tex
 RUN wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py
 RUN pip install psi lockfile paramiko setuptools epydoc psutil
 
 # Install runtime dependencies
 RUN yum -y install openssh-server net-tools iproute which
+# CURL
+RUN cd /tmp && \
+    wget https://github.com/curl/curl/archive/curl-7_49_1.tar.gz && \
+    tar zxvf curl-7_49_1.tar.gz && \
+    cd curl-curl-7_49_1 && \
+    ./buildconf && \
+    ./configure --prefix=/usr/local/curl && \
+    make && \
+    make install
+
+ENV PATH=/usr/local/curl/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/curl/lib:$LD_LIBRARY_PATH

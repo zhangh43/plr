@@ -29,7 +29,7 @@ ssh_keyscan_for_user() {
 
 transfer_ownership() {
   chown -R gpadmin:gpadmin /data
-  chown -R gpadmin:gpadmin /usr/local/greenplum-db
+  chown -R gpadmin:gpadmin $GPHOME
 }
 
 setup_gpadmin_user() {

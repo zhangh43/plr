@@ -11,9 +11,10 @@ if [ "$OSVER" == "centos5" ]; then
     alias gcc=gcc44
 fi
 
+
 # Zlib dependency
-wget --no-check-certificate https://github.com/madler/zlib/archive/v1.2.8.tar.gz
-tar zxvf v1.2.8
+wget --no-check-certificate https://github.com/madler/zlib/archive/v1.2.8.tar.gz -O v1.2.8.tar.gz
+tar zxvf v1.2.8.tar.gz
 pushd zlib-1.2.8
 ./configure --prefix=/usr/local/lib64/zlib
 make
@@ -37,7 +38,7 @@ export CFLAGS="$CFLAGS -I/usr/local/lib64/bzip2/include"
 popd
 
 # LZMA dependency
-wget http://tukaani.org/xz/xz-5.2.2.tar.gz
+wget --no-check-certificate http://tukaani.org/xz/xz-5.2.2.tar.gz
 tar zxvf xz-5.2.2.tar.gz
 pushd xz-5.2.2
 ./configure --prefix=/usr/local/lib64/xz
@@ -105,13 +106,30 @@ cp /usr/local/lib64/xz/lib/liblzma.so.5     /usr/lib64/R/lib64/R/extlib
 cp /usr/local/lib64/pcre/lib/libpcre.so.1   /usr/lib64/R/lib64/R/extlib
 
 case $OSVER in
-    centos*)
+    centos5)
         cp /usr/local/lib64/bzip2/lib/libbz2.so.1.0 /usr/lib64/R/lib64/R/extlib
         cp /usr/local/curl/lib/libcurl.so.4         /usr/lib64/R/lib64/R/extlib
         cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
         cp /usr/lib64/libgfortran.so.1              /usr/lib64/R/lib64/R/extlib
         cp /lib64/libssl.so.6                       /usr/lib64/R/lib64/R/extlib
         cp /lib64/libcrypto.so.6                    /usr/lib64/R/lib64/R/extlib
+    ;;
+    centos6)
+        cp /usr/local/lib64/bzip2/lib/libbz2.so.1.0 /usr/lib64/R/lib64/R/extlib
+        cp /usr/local/curl/lib/libcurl.so.4         /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgfortran.so.3              /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libssl.so.10                  /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libcrypto.so.10               /usr/lib64/R/lib64/R/extlib
+    ;;
+    centos7)
+        cp /usr/local/lib64/bzip2/lib/libbz2.so.1.0 /usr/lib64/R/lib64/R/extlib
+        cp /usr/local/curl/lib/libcurl.so.4         /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgfortran.so.3              /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libssl.so.10                  /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libcrypto.so.10               /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libquadmath.so.0              /usr/lib64/R/lib64/R/extlib
     ;;
     suse*)
         cp /usr/local/lib64/bzip2/lib/libbz2.so.1   /usr/lib64/R/lib64/R/extlib

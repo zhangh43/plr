@@ -1,0 +1,11 @@
+platform: linux
+
+inputs:
+  - name: bin_gpdb
+  - name: plr_src
+  - name: bin_plr
+
+run:
+  path: plr_src/concourse/scripts/test_plr.sh
+params:
+  OSVER:
