@@ -49,7 +49,7 @@ export CFLAGS="$CFLAGS -I/usr/local/lib64/xz/include"
 popd
 
 # PCRE dependency
-wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.tar.gz
+wget ftp://ftp.pcre.org/pub/pcre/pcre-8.39.tar.gz
 tar zxvf pcre-8.39.tar.gz
 pushd pcre-8.39
 ./configure --enable-utf --enable-unicode-properties --enable-jit --disable-cpp --prefix=/usr/local/lib64/pcre
