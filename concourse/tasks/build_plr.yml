@@ -1,15 +1,16 @@
 platform: linux
-
-
+image_resource:
+  type: docker-image
 inputs:
   - name: bin_gpdb
   - name: plr_src
   - name: bin_r
+  - name: gpdb_src
 
 outputs:
   - name: bin_plr
 
 run:
-  path: plr_src/concourse/scripts/release_plr_gpdb_build.sh
+  path: plr_src/concourse/scripts/build_plr.sh
 params:
   OSVER:

@@ -1,0 +1,13 @@
+platform: linux
+image_resource:
+  type: docker-image
+inputs:
+  - name: plr_src
+
+outputs:
+  - name: bin_r
+
+run:
+  path: plr_src/concourse/scripts/build_r.sh
+params:
+  OSVER:

@@ -1,49 +1,82 @@
 #!/bin/bash -l
 
-set -eox pipefail
-
-WORKDIR=`pwd`
-TMPDIR=/tmp/localplrcopy
+set -exo pipefail
 
 CWDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "${CWDIR}/common.bash"
+TOP_DIR=${CWDIR}/../../../
+source "${TOP_DIR}/gpdb_src/concourse/scripts/common.bash"
 
-if [ "$OSVER" == "centos5" ]; then
-    rm -f /usr/bin/python && ln -s /usr/bin/python26 /usr/bin/python
-fi
+function prepare_test(){	
 
-# Put GPDB binaries in place to get pg_config
-install_gpdb_bin
-source /usr/local/greenplum-db-devel/greenplum_path.sh || exit 1
+	cat > /home/gpadmin/test.sh <<-EOF
+		set -exo pipefail
 
-# GPDB Installation Preparation
-mkdir /data
-source plr_src/concourse/scripts/gpdb_install_functions.sh || exit 1
-setup_gpadmin_user $OSVER
-setup_sshd
+        if [ "$OSVER" == "suse11" ]; then
+            # Official GPDB for SUSE 11 comes with very old version of glibc, getting rid of it here
+            unset LD_LIBRARY_PATH
+        fi
 
-# GPDB Installation
-cp plr_src/concourse/scripts/*.sh /tmp
-chmod 777 /tmp/*.sh
-su - gpadmin -c "source /usr/local/greenplum-db-devel/greenplum_path.sh && bash /tmp/install-cluster.sh /data" || exit 1
+        source ${TOP_DIR}/gpdb_src/gpAux/gpdemo/gpdemo-env.sh
+        source /usr/local/greenplum-db-devel/greenplum_path.sh
+		gppkg -i bin_plr/plr-*.gppkg || exit 1
+        source /usr/local/greenplum-db-devel/greenplum_path.sh
+        gpstop -arf
 
-# Installing PL/R and running tests
-su - gpadmin -c "bash /tmp/plr_install_test.sh bin_plr $OSVER $WORKDIR $TMPDIR"
-RETCODE=$?
+        pushd plr_src/regress
+        \$GPHOME/lib/postgresql/pgxs/src/test/regress/pg_regress --psqldir=\$GPHOME/bin/ --load-language=plr --schedule=${TOP_DIR}/plr_src/regress/plr_schedule --srcdir=${TOP_DIR}/plr_src/regress/ --inputdir=${TOP_DIR}/plr_src/regress/ --outputdir=${TOP_DIR}/plr_src/regress/
 
-if [ $RETCODE -ne 0 ]; then
-    echo "PL/R test failed"
-    echo "====================================================================="
-    echo "========================= REGRESSION DIFFS =========================="
-    echo "====================================================================="
-    cat $TMPDIR/regression.out
-    cat $TMPDIR/regression.diffs
-    echo "====================================================================="
-    echo "============================== RESULTS =============================="
-    echo "====================================================================="
-    cat $TMPDIR/results/plr.out
-else
-    echo "PL/R test succeeded"
-fi
+        [ -s regression.diffs ] && cat regression.diffs && exit 1
+        popd
 
-exit $RETCODE
+	EOF
+
+	chown -R gpadmin:gpadmin $(pwd)
+	chown gpadmin:gpadmin /home/gpadmin/test.sh
+	chmod a+x /home/gpadmin/test.sh
+	mkdir -p /usr/lib64/R/lib64
+	ln -s /usr/local/greenplum-db-devel/ext/R-3.3.1 /usr/lib64/R/lib64/R
+	chown -R gpadmin:gpadmin /usr/lib64/R/
+
+}
+
+function test() {
+	su gpadmin -c "bash /home/gpadmin/test.sh $(pwd)"
+
+    case "$OSVER" in
+    suse11)
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-ossv8.3.0.15_pv2.x.0-$GPGBVER-orca-sles11-x86_64.gppkg
+      ;;
+    centos6)
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-ossv8.3.0.15_pv2.x.0-$GPGBVER-orca-rhel6-x86_64.gppkg
+      ;;
+    centos7)
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-ossv8.3.0.15_pv2.x.0-$GPGBVER-orca-rhel7-x86_64.gppkg
+      ;;
+    *) echo "Unknown OS: $OSVER"; exit 1 ;;
+  esac
+
+}
+
+function setup_gpadmin_user() {
+    case "$OSVER" in
+    suse*)
+      ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "sles"
+      ;;
+    centos*)
+       ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "centos"
+      ;;
+    *) echo "Unknown OS: $OSVER"; exit 1 ;;
+  esac
+	
+}
+
+function _main() {
+	time install_gpdb
+	time setup_gpadmin_user
+
+	time make_cluster
+	time prepare_test 
+	time test
+}
+
+_main "$@"
