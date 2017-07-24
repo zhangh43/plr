@@ -7,7 +7,7 @@ TOP_DIR=${CWDIR}/../../../
 
 
 if [ "$OSVER" == "centos5" ]; then
-    alias gcc=gcc44
+    source /opt/gcc_env.sh
 fi
 
 if [ "$OSVER" == "suse11" ]; then
@@ -99,7 +99,6 @@ if [ "$OSVER" == "suse11" ]; then
     export LD_LIBRARY_PATH=/usr/local/lib64/neon/lib:$LD_LIBRARY_PATH
 
     # Curl
-    # export CFLAGS="$CFLAGS -I/usr/local/lib64/curl/include"
     wget http://curl.askapache.com/download/curl-7.54.1.tar.gz
     tar zxvf curl-7.54.1.tar.gz
     pushd curl-7.54.1
@@ -109,8 +108,21 @@ if [ "$OSVER" == "suse11" ]; then
     popd
     export LD_LIBRARY_PATH=/usr/local/lib64/curl/lib:$LD_LIBRARY_PATH
     export PATH=/usr/local/lib64/curl/bin/:$PATH
+fi
 
 
+if [ "$OSVER" == "centos5" ]; then
+
+    # Curl
+    wget http://curl.askapache.com/download/curl-7.54.1.tar.gz
+    tar zxvf curl-7.54.1.tar.gz
+    pushd curl-7.54.1
+    ./configure --prefix=/usr/local/lib64/curl --disable-ldap --disable-ldaps
+    make -j
+    make install
+    popd
+    export LD_LIBRARY_PATH=/usr/local/lib64/curl/lib:$LD_LIBRARY_PATH
+    export PATH=/usr/local/lib64/curl/bin/:$PATH
 fi
 
 export LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -138,7 +150,7 @@ case $OSVER in
         cp /usr/local/lib64/bzip2/lib/libbz2.so.1.0 /usr/lib64/R/lib64/R/extlib
 #        cp /usr/local/curl/lib/libcurl.so.4         /usr/lib64/R/lib64/R/extlib
         cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
-        cp /usr/lib64/libgfortran.so.1              /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgfortran.so.3              /usr/lib64/R/lib64/R/extlib
 #        cp /lib64/libssl.so.6                       /usr/lib64/R/lib64/R/extlib
 #        cp /lib64/libcrypto.so.6                    /usr/lib64/R/lib64/R/extlib
     ;;
