@@ -23,6 +23,7 @@ else
     yum install -y subversion
     yum install -y gcc gcc-c++ gcc-gfortran
     yum install -y 'texlive-*'
+    yum install -y wget
 fi
 
 

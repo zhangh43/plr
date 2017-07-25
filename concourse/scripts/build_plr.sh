@@ -8,6 +8,7 @@ TOP_DIR=${CWDIR}/../../../
 source "${TOP_DIR}/gpdb_src/concourse/scripts/common.bash"
 
 function pkg() {
+    source /opt/gcc_env.sh
     source /usr/local/greenplum-db-devel/greenplum_path.sh
 
     ## Install R
