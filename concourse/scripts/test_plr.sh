@@ -81,6 +81,10 @@ function _main() {
 	time install_gpdb
 	time setup_gpadmin_user
 
+    if [ "$OSVER" == "centos5" ]; then
+        rm /home/gpadmin/.ssh/config
+    fi
+    
 	time make_cluster
 	time prepare_test 
 	time test
