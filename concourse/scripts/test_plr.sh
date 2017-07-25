@@ -23,6 +23,13 @@ function prepare_test(){
         gpstop -arf
 
         pushd plr_src/regress
+        
+        if [ "$GPGBVER" == "GPDB4.3" ]; then
+            sed -i 's/extension/contrib/g' sql/plr.sql
+            sed -i 's/extension/contrib/g' expected/plr.out
+        fi
+
+
         \$GPHOME/lib/postgresql/pgxs/src/test/regress/pg_regress --psqldir=\$GPHOME/bin/ --load-language=plr --schedule=${TOP_DIR}/plr_src/regress/plr_schedule --srcdir=${TOP_DIR}/plr_src/regress/ --inputdir=${TOP_DIR}/plr_src/regress/ --outputdir=${TOP_DIR}/plr_src/regress/
 
         [ -s regression.diffs ] && cat regression.diffs && exit 1

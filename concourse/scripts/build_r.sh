@@ -61,7 +61,7 @@ if [ "$OSVER" == "centos7" ]; then
     cp ${TOP_DIR}/plr_src/concourse/scripts/xz.patch ./src/liblzma/liblzma.map
 fi
 ./configure --prefix=/usr/local/lib64/xz
-make
+make -j
 make install
 export LD_LIBRARY_PATH=/usr/local/lib64/xz/lib:$LD_LIBRARY_PATH
 export CFLAGS="$CFLAGS -I/usr/local/lib64/xz/include"

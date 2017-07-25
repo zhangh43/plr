@@ -23,6 +23,7 @@ function pkg() {
     make
     popd
     pushd plr_src/gppkg
+    sed -i 's/extension/contrib/g' gppkg_spec.yml.in
     make cleanall
     make
     popd
