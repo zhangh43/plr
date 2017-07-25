@@ -151,7 +151,7 @@ case $OSVER in
         cp /usr/local/lib64/bzip2/lib/libbz2.so.1.0 /usr/lib64/R/lib64/R/extlib
 #        cp /usr/local/curl/lib/libcurl.so.4         /usr/lib64/R/lib64/R/extlib
         cp /usr/lib64/libgomp.so.1                  /usr/lib64/R/lib64/R/extlib
-        cp /usr/lib64/libgfortran.so.1.0.0             /usr/lib64/R/lib64/R/extlib
+        cp /usr/lib64/libgfortran.so.1.0.0             /usr/lib64/R/lib64/R/extlib/libgfortran.so.1
 #        cp /lib64/libssl.so.6                       /usr/lib64/R/lib64/R/extlib
 #        cp /lib64/libcrypto.so.6                    /usr/lib64/R/lib64/R/extlib
     ;;
