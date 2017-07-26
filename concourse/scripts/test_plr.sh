@@ -71,7 +71,7 @@ function test_gpdb4() {
         cp bin_plr/plr-*.gppkg plr_gppkg/plr-8.3.0.15_pv2.x.0-$GPGBVER-orca-sles11-x86_64.gppkg
       ;;
     centos5)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-8.3.0.15_pv2.x.0-$GPGBVER-orca-rhel6-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-8.3.0.15_pv2.x.0-$GPGBVER-orca-rhel5-x86_64.gppkg
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
   esac
