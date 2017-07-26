@@ -23,7 +23,9 @@ function pkg() {
     make
     popd
     pushd plr_src/gppkg
-    sed -i 's/extension/contrib/g' gppkg_spec.yml.in
+    if [ "$GPGBVER" == "GPDB4.3" ]; then
+       sed -i 's/extension/contrib/g' gppkg_spec.yml.in
+    fi
     make cleanall
     make
     popd
