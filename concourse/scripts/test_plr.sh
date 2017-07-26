@@ -61,19 +61,33 @@ function test() {
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
   esac
+}
+
+function test_gpdb4() {
+	su gpadmin -c "bash /home/gpadmin/test.sh $(pwd)"
+
+    case "$OSVER" in
+    suse11)
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-8.3.0.15_pv2.x.0-$GPGBVER-orca-sles11-x86_64.gppkg
+      ;;
+    centos5)
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-8.3.0.15_pv2.x.0-$GPGBVER-orca-rhel6-x86_64.gppkg
+      ;;
+    *) echo "Unknown OS: $OSVER"; exit 1 ;;
+  esac
 
 }
 
 function setup_gpadmin_user() {
     case "$OSVER" in
-    suse*)
-      ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "sles"
-      ;;
-    centos*)
-       ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "centos"
-      ;;
-    *) echo "Unknown OS: $OSVER"; exit 1 ;;
-  esac
+        suse*)
+        ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "sles"
+        ;;
+        centos*)
+        ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "centos"
+        ;;
+        *) echo "Unknown OS: $OSVER"; exit 1 ;;
+    esac
 	
 }
 
@@ -86,8 +100,16 @@ function _main() {
     fi
     
 	time make_cluster
-	time prepare_test 
-	time test
+	time prepare_test
+    case "$GPGBVER" in
+        GPDB4.3)
+        time test_gpdb4
+        ;;
+        GPDB-5.0.0)
+        time test
+        ;;
+        *) echo "Unknown GPDB Version: $GPGBVER"; exit 1 ;;
+  esac
 }
 
 _main "$@"
