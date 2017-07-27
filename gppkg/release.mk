@@ -1,8 +1,8 @@
 # Open source PLR version
-PLR_OSS_VER=8.3.0.15
+PLR_OSS_VER=8.3.1.15
 
 # Pivotal package version
-PLR_VER = 2.2
+PLR_VER = 2.3
 PLR_REL = 0
 
 # Embedded R version

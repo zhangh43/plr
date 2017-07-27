@@ -24,7 +24,7 @@ function prepare_test(){
 
         pushd plr_src/regress
         
-        if [ "$GPGBVER" == "GPDB4.3" ]; then
+        if [ "$GPDBVER" == "GPDB4.3" ]; then
             sed -i 's/extension/contrib/g' sql/plr.sql
             sed -i 's/extension/contrib/g' expected/plr.out
         fi
@@ -51,13 +51,13 @@ function test() {
 
     case "$OSVER" in
     suse11)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPGBVER-orca-sles11-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-sles11-x86_64.gppkg
       ;;
     centos6)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPGBVER-orca-rhel6-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-rhel6-x86_64.gppkg
       ;;
     centos7)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPGBVER-orca-rhel7-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-rhel7-x86_64.gppkg
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
   esac
@@ -68,10 +68,10 @@ function test_gpdb4() {
 
     case "$OSVER" in
     suse11)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPGBVER-orca-sles11-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-sles11-x86_64.gppkg
       ;;
     centos5)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPGBVER-orca-rhel5-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-rhel5-x86_64.gppkg
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
   esac
@@ -101,14 +101,14 @@ function _main() {
     
 	time make_cluster
 	time prepare_test
-    case "$GPGBVER" in
+    case "$GPDBVER" in
         GPDB4.3)
         time test_gpdb4
         ;;
         GPDB-5.0.0)
         time test
         ;;
-        *) echo "Unknown GPDB Version: $GPGBVER"; exit 1 ;;
+        *) echo "Unknown GPDB Version: $GPDBVER"; exit 1 ;;
   esac
 }
 
