@@ -14,4 +14,4 @@ run:
   path: plr_src/concourse/scripts/build_plr.sh
 params:
   OSVER:
-  GPGBVER:
+  GPDBVER:
