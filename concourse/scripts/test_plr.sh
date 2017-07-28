@@ -51,13 +51,13 @@ function test() {
 
     case "$OSVER" in
     suse11)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-sles11-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-sles11-x86_64.gppkg
       ;;
     centos6)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-rhel6-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-rhel6-x86_64.gppkg
       ;;
     centos7)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-rhel7-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-rhel7-x86_64.gppkg
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
   esac
@@ -68,10 +68,10 @@ function test_gpdb4() {
 
     case "$OSVER" in
     suse11)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-sles11-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-sles11-x86_64.gppkg
       ;;
     centos5)
-        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-orca-rhel5-x86_64.gppkg
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-rhel5-x86_64.gppkg
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
   esac
