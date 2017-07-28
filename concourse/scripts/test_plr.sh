@@ -105,7 +105,7 @@ function _main() {
         GPDB4.3)
         time test_gpdb4
         ;;
-        GPDB-5.0.0)
+        gp5)
         time test
         ;;
         *) echo "Unknown GPDB Version: $GPDBVER"; exit 1 ;;

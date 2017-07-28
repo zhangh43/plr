@@ -367,7 +367,7 @@ jobs:
         bin_plr: plr_gpdb_centos7_build
       params:
         OSVER: centos7
-        GPDBVER: GPDB-5.0.0
+        GPDBVER: gp5
   - aggregate:
     - put: plr_gpdb_centos7_build
       params:
@@ -395,7 +395,7 @@ jobs:
         bin_plr: plr_gpdb_centos6_build
       params:
         OSVER: centos6
-        GPDBVER: GPDB-5.0.0
+        GPDBVER: gp5
   - aggregate:
     - put: plr_gpdb_centos6_build
       params:
@@ -423,7 +423,7 @@ jobs:
         bin_plr: plr_gpdb_suse11_build
       params:
         OSVER: suse11
-        GPDBVER: GPDB-5.0.0
+        GPDBVER: gp5
   - aggregate:
     - put: plr_gpdb_suse11_build
       params:
@@ -451,7 +451,7 @@ jobs:
         plr_gppkg: plr_gpdb_centos6_release
     params:
       OSVER: centos6
-      GPDBVER: GPDB-5.0.0
+      GPDBVER: gp5
   - put: plr_gpdb_centos6_release
     params:
       file: plr_gpdb_centos6_release/plr-*.gppkg
@@ -476,7 +476,7 @@ jobs:
       plr_gppkg: plr_gpdb_centos7_release
     params:
       OSVER: centos7
-      GPDBVER: GPDB-5.0.0
+      GPDBVER: gp5
   - put: plr_gpdb_centos7_release
     params:
       file: plr_gpdb_centos7_release/plr-*.gppkg
@@ -501,7 +501,7 @@ jobs:
       plr_gppkg: plr_gpdb_suse11_release
     params:
       OSVER: suse11
-      GPDBVER: GPDB-5.0.0
+      GPDBVER: gp5
   - put: plr_gpdb_suse11_release
     params:
       file: plr_gpdb_suse11_release/plr-*.gppkg
