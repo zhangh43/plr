@@ -74,8 +74,7 @@ function test_gpdb4() {
         cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-rhel5-x86_64.gppkg
       ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
-  esac
-
+    esac
 }
 
 function setup_gpadmin_user() {
@@ -109,7 +108,7 @@ function _main() {
         time test
         ;;
         *) echo "Unknown GPDB Version: $GPDBVER"; exit 1 ;;
-  esac
+    esac
 }
 
 _main "$@"

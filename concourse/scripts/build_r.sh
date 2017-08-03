@@ -57,9 +57,7 @@ popd
 wget --no-check-certificate http://tukaani.org/xz/xz-5.2.2.tar.gz
 tar zxvf xz-5.2.2.tar.gz
 pushd xz-5.2.2
-if [ "$OSVER" == "centos7" ]; then
-    cp ${TOP_DIR}/plr_src/concourse/scripts/xz.patch ./src/liblzma/liblzma.map
-fi
+cp ${TOP_DIR}/plr_src/concourse/scripts/xz.patch ./src/liblzma/liblzma.map
 ./configure --prefix=/usr/local/lib64/xz
 make -j
 make install
