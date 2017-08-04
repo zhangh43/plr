@@ -73,6 +73,9 @@ function test_gpdb4() {
     centos5)
         cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-rhel5-x86_64.gppkg
       ;;
+    centos6)
+        cp bin_plr/plr-*.gppkg plr_gppkg/plr-2.3.0-$GPDBVER-rhel6-x86_64.gppkg
+      ;;
     *) echo "Unknown OS: $OSVER"; exit 1 ;;
     esac
 }

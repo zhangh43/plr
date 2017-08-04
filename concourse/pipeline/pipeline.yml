@@ -251,6 +251,35 @@ resources:
     secret_access_key: {{bucket-secret-access-key}}
     regexp: release/gpdb4/plr/plr-(.*)-rhel5-x86_64.gppkg
 
+# centos 6
+
+- name: gpdb4_bin_r_centos6
+  type: s3
+  source:
+    bucket: {{pl-bucket-name}}
+    region_name: {{aws-region}}
+    access_key_id: {{bucket-access-key-id}}
+    secret_access_key: {{bucket-secret-access-key}}
+    versioned_file: build/gpdb4/r/bin_r_centos6.tar.gz
+
+- name: plr_gpdb4_centos6_build
+  type: s3
+  source:
+    bucket: {{pl-bucket-name}}
+    region_name: {{aws-region}}
+    access_key_id: {{bucket-access-key-id}}
+    secret_access_key: {{bucket-secret-access-key}}
+    versioned_file: build/gpdb4/plr/plr-centos6.gppkg
+
+- name: plr_gpdb4_centos6_release
+  type: s3
+  source:
+    bucket: {{pl-bucket-name}}
+    region_name: {{aws-region}}
+    access_key_id: {{bucket-access-key-id}}
+    secret_access_key: {{bucket-secret-access-key}}
+    regexp: release/gpdb4/plr/plr-(.*)-rhel6-x86_64.gppkg
+
 # suse11
 
 - name: gpdb4_bin_r_suse11
@@ -528,6 +557,24 @@ jobs:
     params:
       file: gpdb4_bin_r_centos5/bin_r_centos5.tar.gz
 
+- name: GPDB4_Build_R_CENTOS6
+  plan:
+  - aggregate:
+    - get: plr_src
+      trigger: true
+    - get: bin_gpdb4_centos5
+    - get: centos-gpdb-dev-6
+  - task: r_centos5_build
+    file: plr_src/concourse/tasks/build_r.yml
+    image: centos-gpdb-dev-6
+    output_mapping:
+      bin_r: gpdb4_bin_r_centos6
+    params:
+      OSVER: centos6
+  - put: gpdb4_bin_r_centos6
+    params:
+      file: gpdb4_bin_r_centos6/bin_r_centos6.tar.gz
+
 - name: GPDB4_Build_R_SUSE11
   plan:
   - aggregate:
@@ -576,6 +623,34 @@ jobs:
     - put: plr_gpdb4_centos5_build
       params:
         file: plr_gpdb4_centos5_build/plr-*.gppkg
+
+- name: gpdb4_plr_centos6_build
+  max_in_flight: 3
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-6
+    - get: plr_src
+      passed: [GPDB4_Build_R_CENTOS6]
+      trigger: true
+    - get: bin_gpdb4_centos5
+    - get: gpdb4_bin_r_centos6
+    - get: gpdb_src
+  - aggregate:
+    - task: Build_PLR
+      file: plr_src/concourse/tasks/build_plr.yml
+      image: centos-gpdb-dev-6
+      input_mapping:
+        bin_gpdb: bin_gpdb4_centos6
+        bin_r: gpdb4_bin_r_centos6
+      output_mapping:
+        bin_plr: plr_gpdb4_centos6_build
+      params:
+        OSVER: centos6
+        GPDBVER: GPDB4.3
+  - aggregate:
+    - put: plr_gpdb4_centos6_build
+      params:
+        file: plr_gpdb4_centos6_build/plr-*.gppkg
 
 - name: gpdb4_plr_suse11_build
   max_in_flight: 3
@@ -631,6 +706,31 @@ jobs:
   - put: plr_gpdb4_centos5_release
     params:
       file: plr_gpdb4_centos5_release/plr-*.gppkg
+
+- name: gpdb4_plr_centos6_test
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-6
+    - get: plr_src
+      passed: [gpdb4_plr_centos6_build]
+      trigger: true
+    - get: plr_gpdb4_centos6_build
+    - get: bin_gpdb4_centos5
+    - get: gpdb_src
+  - task: Test_PLR
+    file: plr_src/concourse/tasks/test_plr.yml
+    image: centos-gpdb-dev-6
+    input_mapping:
+      bin_gpdb: bin_gpdb4_centos6
+      bin_plr: plr_gpdb4_centos6_build
+    output_mapping:
+        plr_gppkg: plr_gpdb4_centos6_release
+    params:
+      OSVER: centos6
+      GPDBVER: GPDB4.3
+  - put: plr_gpdb4_centos6_release
+    params:
+      file: plr_gpdb4_centos6_release/plr-*.gppkg
 
 - name: gpdb4_plr_suse11_test
   plan:
