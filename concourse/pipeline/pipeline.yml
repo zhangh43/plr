@@ -110,7 +110,7 @@ resources:
   source:
     branch: gpdb_release 
     uri: https://github.com/greenplum-db/plr.git
-    tag_filter: 1.*
+    tag_filter: 2.*
 
 # centos 7
 
@@ -581,8 +581,6 @@ jobs:
   - aggregate:
     - get: centos-gpdb-dev-7
     - get: plr_src
-      passed: [plr_centos7_build]
-      trigger: true
     - get: plr_gpdb_centos7_build
     - get: release_src
       trigger: true
@@ -605,8 +603,6 @@ jobs:
   - aggregate:
     - get: sles-gpdb-dev-11-beta
     - get: plr_src
-      passed: [plr_suse11_build]
-      trigger: true
     - get: plr_gpdb_suse11_build
     - get: release_src
       trigger: true
