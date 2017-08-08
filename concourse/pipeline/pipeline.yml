@@ -15,11 +15,20 @@ groups:
     - plr_centos7_test
     - plr_suse11_test
     - GPDB4_Build_R_CENTOS5
+    - GPDB4_Build_R_CENTOS6
     - GPDB4_Build_R_SUSE11
     - gpdb4_plr_centos5_build
+    - gpdb4_plr_centos6_build
     - gpdb4_plr_suse11_build
     - gpdb4_plr_centos5_test
+    - gpdb4_plr_centos6_test
     - gpdb4_plr_suse11_test
+    - plr_centos6_release
+    - plr_centos7_release
+    - plr_suse11_release
+    - gpdb4_plr_centos5_release
+    - gpdb4_plr_centos6_release
+    - gpdb4_plr_suse11_release
 
 - name: GPDB5
   jobs:
@@ -36,11 +45,23 @@ groups:
 - name: GPDB4
   jobs:
     - GPDB4_Build_R_CENTOS5
+    - GPDB4_Build_R_CENTOS6
     - GPDB4_Build_R_SUSE11
     - gpdb4_plr_centos5_build
+    - gpdb4_plr_centos6_build
     - gpdb4_plr_suse11_build
     - gpdb4_plr_centos5_test
+    - gpdb4_plr_centos6_test
     - gpdb4_plr_suse11_test
+
+- name: RELEASE
+  jobs:
+    - plr_centos6_release
+    - plr_centos7_release
+    - plr_suse11_release
+    - gpdb4_plr_centos5_release
+    - gpdb4_plr_centos6_release
+    - gpdb4_plr_suse11_release
 
 resources:
 
@@ -83,6 +104,13 @@ resources:
   source:
     branch: gpdb_release 
     uri: https://github.com/greenplum-db/plr.git
+
+- name: release_src
+  type: git
+  source:
+    branch: gpdb_release 
+    uri: https://github.com/greenplum-db/plr.git
+    tag_filter: 1.*
 
 # centos 7
 
@@ -481,9 +509,6 @@ jobs:
     params:
       OSVER: centos6
       GPDBVER: gp5
-  - put: plr_gpdb_centos6_release
-    params:
-      file: plr_gpdb_centos6_release/plr-*.gppkg
 
 - name: plr_centos7_test
   plan:
@@ -506,9 +531,6 @@ jobs:
     params:
       OSVER: centos7
       GPDBVER: gp5
-  - put: plr_gpdb_centos7_release
-    params:
-      file: plr_gpdb_centos7_release/plr-*.gppkg
 
 - name: plr_suse11_test
   plan:
@@ -525,6 +547,73 @@ jobs:
     image: sles-gpdb-dev-11-beta
     input_mapping:
       bin_gpdb: bin_gpdb_suse11
+      bin_plr: plr_gpdb_suse11_build
+    output_mapping:
+      plr_gppkg: plr_gpdb_suse11_release
+    params:
+      OSVER: suse11
+      GPDBVER: gp5
+
+- name: plr_centos6_release
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-6
+    - get: plr_src
+    - get: plr_gpdb_centos6_build
+    - get: release_src
+      trigger: true
+  - task: release_PLR
+    file: plr_src/concourse/tasks/release_plr.yml
+    image: centos-gpdb-dev-6
+    input_mapping:
+      bin_plr: plr_gpdb_centos6_build
+    output_mapping:
+        plr_gppkg: plr_gpdb_centos6_release
+    params:
+      OSVER: centos6
+      GPDBVER: gp5
+  - put: plr_gpdb_centos6_release
+    params:
+      file: plr_gpdb_centos6_release/plr-*.gppkg
+
+- name: plr_centos7_release
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-7
+    - get: plr_src
+      passed: [plr_centos7_build]
+      trigger: true
+    - get: plr_gpdb_centos7_build
+    - get: release_src
+      trigger: true
+  - task: release_PLR
+    file: plr_src/concourse/tasks/release_plr.yml
+    image: centos-gpdb-dev-7
+    input_mapping:
+      bin_plr: plr_gpdb_centos7_build
+    output_mapping:
+      plr_gppkg: plr_gpdb_centos7_release
+    params:
+      OSVER: centos7
+      GPDBVER: gp5
+  - put: plr_gpdb_centos7_release
+    params:
+      file: plr_gpdb_centos7_release/plr-*.gppkg
+
+- name: plr_suse11_release
+  plan:
+  - aggregate:
+    - get: sles-gpdb-dev-11-beta
+    - get: plr_src
+      passed: [plr_suse11_build]
+      trigger: true
+    - get: plr_gpdb_suse11_build
+    - get: release_src
+      trigger: true
+  - task: release_PLR
+    file: plr_src/concourse/tasks/release_plr.yml
+    image: sles-gpdb-dev-11-beta
+    input_mapping:
       bin_plr: plr_gpdb_suse11_build
     output_mapping:
       plr_gppkg: plr_gpdb_suse11_release
@@ -564,7 +653,7 @@ jobs:
       trigger: true
     - get: bin_gpdb4_centos5
     - get: centos-gpdb-dev-6
-  - task: r_centos5_build
+  - task: r_centos6_build
     file: plr_src/concourse/tasks/build_r.yml
     image: centos-gpdb-dev-6
     output_mapping:
@@ -640,7 +729,7 @@ jobs:
       file: plr_src/concourse/tasks/build_plr.yml
       image: centos-gpdb-dev-6
       input_mapping:
-        bin_gpdb: bin_gpdb4_centos6
+        bin_gpdb: bin_gpdb4_centos5
         bin_r: gpdb4_bin_r_centos6
       output_mapping:
         bin_plr: plr_gpdb4_centos6_build
@@ -703,9 +792,6 @@ jobs:
     params:
       OSVER: centos5
       GPDBVER: GPDB4.3
-  - put: plr_gpdb4_centos5_release
-    params:
-      file: plr_gpdb4_centos5_release/plr-*.gppkg
 
 - name: gpdb4_plr_centos6_test
   plan:
@@ -721,16 +807,13 @@ jobs:
     file: plr_src/concourse/tasks/test_plr.yml
     image: centos-gpdb-dev-6
     input_mapping:
-      bin_gpdb: bin_gpdb4_centos6
+      bin_gpdb: bin_gpdb4_centos5
       bin_plr: plr_gpdb4_centos6_build
     output_mapping:
         plr_gppkg: plr_gpdb4_centos6_release
     params:
       OSVER: centos6
       GPDBVER: GPDB4.3
-  - put: plr_gpdb4_centos6_release
-    params:
-      file: plr_gpdb4_centos6_release/plr-*.gppkg
 
 - name: gpdb4_plr_suse11_test
   plan:
@@ -747,6 +830,70 @@ jobs:
     image: sles-gpdb-dev-11-beta
     input_mapping:
       bin_gpdb: bin_gpdb4_suse11
+      bin_plr: plr_gpdb4_suse11_build
+    output_mapping:
+      plr_gppkg: plr_gpdb4_suse11_release
+    params:
+      OSVER: suse11
+      GPDBVER: GPDB4.3
+
+- name: gpdb4_plr_centos5_release
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-5
+    - get: plr_src
+    - get: plr_gpdb4_centos5_build
+    - get: release_src
+      trigger: true
+  - task: Test_PLR
+    file: plr_src/concourse/tasks/release_plr.yml
+    image: centos-gpdb-dev-5
+    input_mapping:
+      bin_plr: plr_gpdb4_centos5_build
+    output_mapping:
+        plr_gppkg: plr_gpdb4_centos5_release
+    params:
+      OSVER: centos5
+      GPDBVER: GPDB4.3
+  - put: plr_gpdb4_centos5_release
+    params:
+      file: plr_gpdb4_centos5_release/plr-*.gppkg
+
+- name: gpdb4_plr_centos6_release
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-6
+    - get: plr_src
+    - get: plr_gpdb4_centos6_build
+    - get: release_src
+      trigger: true
+  - task: Test_PLR
+    file: plr_src/concourse/tasks/release_plr.yml
+    image: centos-gpdb-dev-6
+    input_mapping:
+      bin_gpdb: bin_gpdb4_centos5
+      bin_plr: plr_gpdb4_centos6_build
+    output_mapping:
+        plr_gppkg: plr_gpdb4_centos6_release
+    params:
+      OSVER: centos6
+      GPDBVER: GPDB4.3
+  - put: plr_gpdb4_centos6_release
+    params:
+      file: plr_gpdb4_centos6_release/plr-*.gppkg
+
+- name: gpdb4_plr_suse11_release
+  plan:
+  - aggregate:
+    - get: sles-gpdb-dev-11-beta
+    - get: plr_src
+    - get: plr_gpdb4_suse11_build
+    - get: release_src
+      trigger: true
+  - task: Test_PLR
+    file: plr_src/concourse/tasks/release_plr.yml
+    image: sles-gpdb-dev-11-beta
+    input_mapping:
       bin_plr: plr_gpdb4_suse11_build
     output_mapping:
       plr_gppkg: plr_gpdb4_suse11_release
