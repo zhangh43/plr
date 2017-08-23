@@ -126,7 +126,7 @@ fi
 
 export LIBRARY_PATH=$LD_LIBRARY_PATH
 
-wget https://cran.r-project.org/src/base/R-3/R-3.3.3.tar.gz
+wget --no-check-certificate https://cran.r-project.org/src/base/R-3/R-3.3.3.tar.gz
 tar -zxf R-3.3.3.tar.gz
 pushd R-3.3.3
 ./tools/rsync-recommended
