@@ -126,8 +126,9 @@ fi
 
 export LIBRARY_PATH=$LD_LIBRARY_PATH
 
-echo p | svn checkout https://svn.r-project.org/R/branches/R-3-3-branch/
-pushd R-3-3-branch
+wget https://cran.r-project.org/src/base/R-3/R-3.3.3.tar.gz
+tar -zxf R-3.3.3.tar.gz
+pushd R-3.3.3
 ./tools/rsync-recommended
 ./configure --prefix=/usr/lib64/R --with-x=no --with-readline=no --enable-R-shlib --disable-rpath
 make -j
