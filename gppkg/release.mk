@@ -2,9 +2,9 @@
 PLR_OSS_VER=8.3.1.15
 
 # Pivotal package version
-PLR_VER = 2.3
-PLR_REL = 1
+PLR_VER=2.3
+PLR_REL=1
 
 # Embedded R version
-R_VER = 3.3.3
-R_REL = 1
+R_VER=3.3.3
+R_REL=1

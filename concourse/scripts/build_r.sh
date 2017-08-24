@@ -129,6 +129,14 @@ export LIBRARY_PATH=$LD_LIBRARY_PATH
 wget --no-check-certificate https://cran.r-project.org/src/base/R-3/R-3.3.3.tar.gz
 tar -zxf R-3.3.3.tar.gz
 pushd R-3.3.3
+source ${TOP_DIR}/plr_src/gppkg/release.mk
+DOENLOADRVER=`cat VERSION`
+if [ "$R_VER" == "$DOENLOADRVER" ]; then
+	echo "R verion match, require $R_VER, current is $DOENLOADRVER"
+else
+	echo "R version is not match, require $R_VER, current is $DOENLOADRVER "
+	exit 1
+fi
 ./tools/rsync-recommended
 ./configure --prefix=/usr/lib64/R --with-x=no --with-readline=no --enable-R-shlib --disable-rpath
 make -j
