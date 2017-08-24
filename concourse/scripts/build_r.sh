@@ -29,7 +29,7 @@ fi
 
 # Zlib dependency
 wget --no-check-certificate https://github.com/madler/zlib/archive/v1.2.8.tar.gz -O v1.2.8.tar.gz
-tar zxvf v1.2.8.tar.gz
+tar zxf v1.2.8.tar.gz
 pushd zlib-1.2.8
 ./configure --prefix=/usr/local/lib64/zlib
 make -j
@@ -41,7 +41,7 @@ popd
 
 # BZip2 dependency
 wget http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
-tar zxvf bzip2-1.0.6.tar.gz
+tar zxf bzip2-1.0.6.tar.gz
 pushd bzip2-1.0.6
 make -f Makefile-libbz2_so
 make -j
@@ -55,7 +55,7 @@ popd
 
 # LZMA dependency
 wget --no-check-certificate http://tukaani.org/xz/xz-5.2.2.tar.gz
-tar zxvf xz-5.2.2.tar.gz
+tar zxf xz-5.2.2.tar.gz
 pushd xz-5.2.2
 cp ${TOP_DIR}/plr_src/concourse/scripts/xz.patch ./src/liblzma/liblzma.map
 ./configure --prefix=/usr/local/lib64/xz
@@ -67,7 +67,7 @@ popd
 
 # PCRE dependency
 wget ftp://ftp.pcre.org/pub/pcre/pcre-8.39.tar.gz
-tar zxvf pcre-8.39.tar.gz
+tar zxf pcre-8.39.tar.gz
 pushd pcre-8.39
 ./configure --enable-utf --enable-unicode-properties --enable-jit --disable-cpp --prefix=/usr/local/lib64/pcre
 make -j
@@ -78,7 +78,7 @@ popd
 
 # Texinfo for building documentation
 wget http://ftp.gnu.org/gnu/texinfo/texinfo-6.1.tar.gz
-tar zxvf texinfo-6.1.tar.gz
+tar zxf texinfo-6.1.tar.gz
 pushd texinfo-6.1
 ./configure --prefix=/usr/local/lib64/texinfo
 make -j
@@ -89,7 +89,7 @@ export PATH=/usr/local/lib64/texinfo/bin/:$PATH
 if [ "$OSVER" == "suse11" ]; then
     # Neon to make SVN work in SUSE
     wget http://www.webdav.org/neon/neon-0.30.0.tar.gz
-    tar zxvf neon-0.30.0.tar.gz
+    tar zxf neon-0.30.0.tar.gz
     pushd neon-0.30.0
     ./configure --prefix=/usr/local/lib64/neon --enable-shared --with-ssl=openssl
     make -j
@@ -99,7 +99,7 @@ if [ "$OSVER" == "suse11" ]; then
 
     # Curl
     wget http://curl.askapache.com/download/curl-7.54.1.tar.gz
-    tar zxvf curl-7.54.1.tar.gz
+    tar zxf curl-7.54.1.tar.gz
     pushd curl-7.54.1
     ./configure --prefix=/usr/local/lib64/curl --disable-ldap --disable-ldaps
     make -j
@@ -114,7 +114,7 @@ if [ "$OSVER" == "centos5" ]; then
 
     # Curl
     wget http://curl.askapache.com/download/curl-7.54.1.tar.gz
-    tar zxvf curl-7.54.1.tar.gz
+    tar zxf curl-7.54.1.tar.gz
     pushd curl-7.54.1
     ./configure --prefix=/usr/local/lib64/curl --disable-ldap --disable-ldaps
     make -j

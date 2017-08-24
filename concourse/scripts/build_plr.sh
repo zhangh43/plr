@@ -12,7 +12,7 @@ function pkg() {
     source /usr/local/greenplum-db-devel/greenplum_path.sh
 
     ## Install R
-    tar zxvf bin_r/bin_r_$OSVER.tar.gz -C /usr/lib64
+    tar zxf bin_r/bin_r_$OSVER.tar.gz -C /usr/lib64
 
     export LD_LIBRARY_PATH=/usr/lib64/R/lib64/R/lib:/usr/lib64/R/lib64/R/extlib:$LD_LIBRARY_PATH
 
