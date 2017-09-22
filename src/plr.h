@@ -40,7 +40,7 @@
 #include "fmgr.h"
 #include "funcapi.h"
 #include "miscadmin.h"
-#if PG_VERSION_NUM >= 80400
+#if PG_VERSION_NUM >= 80500
 #include "windowapi.h"
 #endif
 #include "access/heapam.h"
@@ -147,7 +147,7 @@ extern int R_SignalHandlers;
 #error "This version of PL/R only builds with PostgreSQL 8.2 or later"
 #elif PG_VERSION_NUM < 80300
 #define PG_VERSION_82_COMPAT
-#elif PG_VERSION_NUM < 80400
+#elif PG_VERSION_NUM < 80500
 #define PG_VERSION_83_COMPAT
 #else
 #define PG_VERSION_84_COMPAT
