@@ -4,8 +4,12 @@ set -exo pipefail
 
 CWDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TOP_DIR=${CWDIR}/../../../
-source "${TOP_DIR}/gpdb_src/concourse/scripts/common.bash"
-
+if [ "$GPDBVER" == "GPDB4.3" ]; then
+    GPDB_CONCOURSE_DIR=${TOP_DIR}/gpdb_src/ci/concourse/scripts
+else
+    GPDB_CONCOURSE_DIR=${TOP_DIR}/gpdb_src/concourse/scripts
+fi
+source "${GPDB_CONCOURSE_DIR}/common.bash"
 function prepare_test(){	
 
 	cat > /home/gpadmin/test.sh <<-EOF
@@ -83,10 +87,10 @@ function test_gpdb4() {
 function setup_gpadmin_user() {
     case "$OSVER" in
         suse*)
-        ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "sles"
+        ${GPDB_CONCOURSE_DIR}/setup_gpadmin_user.bash "sles"
         ;;
         centos*)
-        ${TOP_DIR}/gpdb_src/concourse/scripts/setup_gpadmin_user.bash "centos"
+        ${GPDB_CONCOURSE_DIR}/setup_gpadmin_user.bash "centos"
         ;;
         *) echo "Unknown OS: $OSVER"; exit 1 ;;
     esac
