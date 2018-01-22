@@ -98,7 +98,7 @@ if [ "$OSVER" == "suse11" ]; then
     export LD_LIBRARY_PATH=/usr/local/lib64/neon/lib:$LD_LIBRARY_PATH
 
     # Curl
-    wget http://curl.askapache.com/download/curl-7.54.1.tar.gz
+    wget --no-check-certificate http://curl.askapache.com/download/curl-7.54.1.tar.gz
     tar zxf curl-7.54.1.tar.gz
     pushd curl-7.54.1
     ./configure --prefix=/usr/local/lib64/curl --disable-ldap --disable-ldaps
@@ -113,7 +113,7 @@ fi
 if [ "$OSVER" == "centos5" ]; then
 
     # Curl
-    wget http://curl.askapache.com/download/curl-7.54.1.tar.gz
+    wget --no-check-certificate http://curl.askapache.com/download/curl-7.54.1.tar.gz
     tar zxf curl-7.54.1.tar.gz
     pushd curl-7.54.1
     ./configure --prefix=/usr/local/lib64/curl --disable-ldap --disable-ldaps
