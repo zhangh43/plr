@@ -3,6 +3,8 @@ image_resource:
   type: docker-image
 inputs:
   - name: plr_src
+  - name: xz
+  - name: zlib
 
 outputs:
   - name: bin_r
