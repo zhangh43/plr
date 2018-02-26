@@ -54,7 +54,7 @@ export CFLAGS="$CFLAGS -I/usr/local/lib64/bzip2/include"
 popd
 
 # LZMA dependency
-wget --no-check-certificate http://tukaani.org/xz/xz-5.2.2.tar.gz
+pushd ${TOP_DIR}/xz
 tar zxf xz-5.2.2.tar.gz
 pushd xz-5.2.2
 cp ${TOP_DIR}/plr_src/concourse/scripts/xz.patch ./src/liblzma/liblzma.map
@@ -63,6 +63,7 @@ make -j
 make install
 export LD_LIBRARY_PATH=/usr/local/lib64/xz/lib:$LD_LIBRARY_PATH
 export CFLAGS="$CFLAGS -I/usr/local/lib64/xz/include"
+popd
 popd
 
 # PCRE dependency
