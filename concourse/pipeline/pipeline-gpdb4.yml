@@ -133,6 +133,23 @@ resources:
     secret_access_key: {{bucket-secret-access-key}}
     versioned_file: build/gpdb4/plr/suse11/plr-devel.gppkg
 
+- name: xz
+  type: s3
+  source:
+    bucket: {{pl-bucket-name}}
+    region_name: {{aws-region}}
+    access_key_id: {{bucket-access-key-id}}
+    secret_access_key: {{bucket-secret-access-key}}
+    versioned_file: dependancy/xz-5.2.2.tar.gz
+
+- name: zlib
+  type: s3
+  source:
+    bucket: {{pl-bucket-name}}
+    region_name: {{aws-region}}
+    access_key_id: {{bucket-access-key-id}}
+    secret_access_key: {{bucket-secret-access-key}}
+    versioned_file: dependancy/zlib-1.2.8.tar.gz
 
 ## ======================================================================
 ## jobs
@@ -152,6 +169,8 @@ jobs:
     - get: bin_gpdb4_centos5
       trigger: true
     - get: centos-gpdb-dev-5
+    - get: xz
+    - get: zlib
   - task: r_centos5_build
     file: plr_src/concourse/tasks/build_r.yml
     image: centos-gpdb-dev-5
@@ -171,6 +190,8 @@ jobs:
     - get: bin_gpdb4_centos5
       trigger: true
     - get: centos-gpdb-dev-6
+    - get: xz
+    - get: zlib
   - task: r_centos6_build
     file: plr_src/concourse/tasks/build_r.yml
     image: centos-gpdb-dev-6
@@ -189,6 +210,8 @@ jobs:
       trigger: true
     - get: bin_gpdb4_suse11
       trigger: true
+    - get: xz
+    - get: zlib
   - task: r_suse11_build
     file: plr_src/concourse/tasks/build_r_sles.yml
     output_mapping:
