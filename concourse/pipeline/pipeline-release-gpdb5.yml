@@ -41,12 +41,6 @@ resources:
   source:
     branch: master
     uri: https://github.com/greenplum-db/plr.git
-
-- name: release_src
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/greenplum-db/plr.git
     tag_filter: 2.*
 
 # centos 7
@@ -146,9 +140,8 @@ jobs:
   - aggregate:
     - get: centos-gpdb-dev-6
     - get: plr_src
-    - get: plr_gpdb_centos6_build
-    - get: release_src
       trigger: true
+    - get: plr_gpdb_centos6_build
   - task: release_PLR
     file: plr_src/concourse/tasks/release_plr.yml
     image: centos-gpdb-dev-6
@@ -168,9 +161,8 @@ jobs:
   - aggregate:
     - get: centos-gpdb-dev-7
     - get: plr_src
-    - get: plr_gpdb_centos7_build
-    - get: release_src
       trigger: true
+    - get: plr_gpdb_centos7_build
   - task: release_PLR
     file: plr_src/concourse/tasks/release_plr.yml
     image: centos-gpdb-dev-7
@@ -189,9 +181,8 @@ jobs:
   plan:
   - aggregate:
     - get: plr_src
-    - get: plr_gpdb_suse11_build
-    - get: release_src
       trigger: true
+    - get: plr_gpdb_suse11_build
   - task: release_PLR
     file: plr_src/concourse/tasks/release_plr_sles.yml
     input_mapping:
@@ -210,11 +201,11 @@ jobs:
   - aggregate:
     - get: centos-gpdb-dev-6
     - get: plr_src
-      resource: release_src
     - get: plr_gpdb_centos6_release
       passed: [plr_centos6_release]
       trigger: true
     - get: bin_gpdb_centos6
+      trigger: true
     - get: gpdb_src
   - task: Test_PLR
     file: plr_src/concourse/tasks/test_plr.yml
@@ -231,11 +222,11 @@ jobs:
   - aggregate:
     - get: centos-gpdb-dev-7
     - get: plr_src
-      resource: release_src
     - get: plr_gpdb_centos7_release
       passed: [plr_centos7_release]
       trigger: true
     - get: bin_gpdb_centos7
+      trigger: true
     - get: gpdb_src
   - task: Test_PLR
     file: plr_src/concourse/tasks/test_plr.yml
@@ -251,11 +242,11 @@ jobs:
   plan:
   - aggregate:
     - get: plr_src
-      resource: release_src
     - get: plr_gpdb_suse11_release
       passed: [plr_suse11_release]
       trigger: true
     - get: bin_gpdb_suse11
+      trigger: true
     - get: gpdb_src
   - task: Test_PLR
     file: plr_src/concourse/tasks/test_plr_sles.yml
