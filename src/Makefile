@@ -23,7 +23,7 @@ SRCS		+= plr.c pg_conversion.c pg_backend_support.c pg_userfuncs.c pg_rsupport.c
 OBJS		:= $(SRCS:.c=.o)
 SHLIB_LINK	+= -L$(r_libdir1x) -L$(r_libdir2x) -lR
 DATA_built	= plr.sql
-#DATA		= plr--8.3.0.16.sql plr--unpackaged--8.3.0.16.sql
+DATA		= plr--8.3.0.16.sql plr--unpackaged--8.3.0.16.sql
 DOCS		= README.plr
 REGRESS		= plr
 EXTRA_CLEAN	= doc/html/* doc/plr-US.aux doc/plr-*.log doc/plr-*.out doc/plr-*.pdf doc/plr-*.tex-pdf
@@ -73,7 +73,7 @@ override CPPFLAGS := -I"$(srcdir)" -I"$(r_includespec)" $(CPPFLAGS)
 override CPPFLAGS += -DPKGLIBDIR=\"$(pkglibdir)\" -DDLSUFFIX=\"$(DLSUFFIX)\"
 override CPPFLAGS += -DR_HOME_DEFAULT=\"$(rhomedef)\"
 
-REGRESS_OPTS = --dbname=$(PL_TESTDB) --load-language=plr
+REGRESS_OPTS = --dbname=$(PL_TESTDB)
 REGRESS = plr
 
 .PHONY: release
