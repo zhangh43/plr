@@ -9,6 +9,14 @@ groups:
     - plr_centos7_release
     - plr_centos6_test
     - plr_centos7_test
+    - manual_push_centos6_release
+    - manual_push_centos7_release
+
+resource_types:
+- name: gcs
+  type: docker-image
+  source:
+    repository: frodenas/gcs-resource
 
 resources:
 
@@ -44,31 +52,25 @@ resources:
 # centos 7
 
 - name: plr_gpdb_centos7_build
-  type: s3
+  type: gcs
   source:
-    bucket: {{pl-bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    versioned_file: build/gpdb6/plr/centos7/plr-devel.gppkg
+    json_key: {{gcs-read-write-service-account-key}}
+    bucket: {{gcs-bucket-dev}}
+    versioned_file: plr/gpdb6/plr-rhel7.gppkg
 
 - name: plr_gpdb_centos7_release
-  type: s3
+  type: gcs
   source:
-    bucket: {{pl-bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    regexp: release/gpdb6/plr/plr-(.*)-rhel7-x86_64.gppkg
+    json_key: {{gcs-read-write-service-account-key}}
+    bucket: {{gcs-bucket}}
+    regexp: plr/released/gpdb6/plr-(.*)-rhel7-x86_64.gppkg
 
 - name: plr_gpdb_centos7_release_candidate
-  type: s3
+  type: gcs
   source:
-    bucket: {{pl-bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    regexp: release_candidate/gpdb6/plr/plr-(.*)-rhel7-x86_64.gppkg
+    json_key: {{gcs-read-write-service-account-key}}
+    bucket: {{gcs-bucket}}
+    regexp: plr/published/gpdb6/plr-(.*)-rhel7-x86_64.gppkg
 
 - name: bin_gpdb_centos7
   type: s3
@@ -82,31 +84,25 @@ resources:
 # centtos 6
 
 - name: plr_gpdb_centos6_build
-  type: s3
+  type: gcs
   source:
-    bucket: {{pl-bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    versioned_file: build/gpdb6/plr/centos6/plr-devel.gppkg
+    json_key: {{gcs-read-write-service-account-key}}
+    bucket: {{gcs-bucket-dev}}
+    versioned_file: plr/gpdb6/plr-rhel6.gppkg
 
 - name: plr_gpdb_centos6_release
-  type: s3
+  type: gcs
   source:
-    bucket: {{pl-bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    regexp: release/gpdb6/plr/plr-(.*)-rhel6-x86_64.gppkg
+    json_key: {{gcs-read-write-service-account-key}}
+    bucket: {{gcs-bucket}}
+    regexp: plr/released/gpdb6/plr-(.*)-rhel6-x86_64.gppkg
 
 - name: plr_gpdb_centos6_release_candidate
-  type: s3
+  type: gcs
   source:
-    bucket: {{pl-bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    regexp: release_candidate/gpdb6/plr/plr-(.*)-rhel6-x86_64.gppkg
+    json_key: {{gcs-read-write-service-account-key}}
+    bucket: {{gcs-bucket}}
+    regexp: plr/published/gpdb6/plr-(.*)-rhel6-x86_64.gppkg
 
 - name: bin_gpdb_centos6
   type: s3
@@ -201,3 +197,49 @@ jobs:
       OSVER: centos7
       GPDBVER: gp6
 
+- name: manual_push_centos7_release
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-7
+    - get: plr_gpdb_centos7_release_candidate
+  - task: Copy_GPPKG
+    image: centos-gpdb-dev-7
+    config:
+      platform: linux
+      inputs:
+       - name: plr_gpdb_centos7_release_candidate
+      outputs:
+       - name: plr_gpdb_centos7_release
+      run:
+          path: "sh"
+          args:
+            - -exc
+            - |
+              cp plr_gpdb_centos7_release_candidate/plr-*.gppkg plr_gpdb_centos7_release/
+  - put: plr_gpdb_centos7_release
+    params:
+      file: plr_gpdb_centos7_release/plr-*.gppkg
+
+
+- name: manual_push_centos6_release
+  plan:
+  - aggregate:
+    - get: centos-gpdb-dev-6
+    - get: plr_gpdb_centos6_release_candidate
+  - task: Copy_GPPKG
+    image: centos-gpdb-dev-6
+    config:
+      platform: linux
+      inputs:
+       - name: plr_gpdb_centos6_release_candidate
+      outputs:
+       - name: plr_gpdb_centos6_release
+      run:
+          path: "sh"
+          args:
+            - -exc
+            - |
+              cp plr_gpdb_centos6_release_candidate/plr-*.gppkg plr_gpdb_centos6_release/
+  - put: plr_gpdb_centos6_release
+    params:
+      file: plr_gpdb_centos6_release/plr-*.gppkg
