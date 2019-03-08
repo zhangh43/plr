@@ -49,13 +49,11 @@ resources:
 # centos 7
 
 - name: bin_gpdb_centos7
-  type: s3
+  type: gcs
   source:
-    bucket: {{bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    versioned_file: bin_gpdb_centos7/bin_gpdb.tar.gz
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: gpdb_master/bin_gpdb_centos7/bin_gpdb.tar.gz
 
 - name: plr_gpdb_centos7_build
   type: gcs
@@ -72,27 +70,25 @@ resources:
     versioned_file: plr/plr-centos6/gpdb6/plr-devel.gppkg
 
 - name: bin_gpdb_centos6
-  type: s3
+  type: gcs
   source:
-    bucket: {{bucket-name}}
-    region_name: {{aws-region}}
-    access_key_id: {{bucket-access-key-id}}
-    secret_access_key: {{bucket-secret-access-key}}
-    versioned_file: bin_gpdb_centos/bin_gpdb.tar.gz
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: gpdb_master/bin_gpdb_centos6/bin_gpdb.tar.gz
 
 - name: plr_gpdb_centos7_bin
   type: gcs
   source:
     json_key: {{gcs-read-write-service-account-key}}
     bucket: {{gcs-bucket}}
-    versioned_file: plr/gpdb6/plr-rhel7.gppkg
+    regexp: plr/published/gpdb6/plr-rhel7.gppkg
 
 - name: plr_gpdb_centos6_bin
   type: gcs
   source:
     json_key: {{gcs-read-write-service-account-key}}
     bucket: {{gcs-bucket}}
-    versioned_file: plr/gpdb6/plr-rhel6.gppkg
+    regexp: plr/published/gpdb6/plr-rhel6.gppkg
 
 ## jobs
 ## ======================================================================
